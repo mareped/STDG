@@ -1,0 +1,43 @@
+{
+    "fields": {
+        "pelvic_incidence": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "pelvic_tilt": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "lumbar_lordosis_angle": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "sacral_slope": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "pelvic_radius": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "degree_spondylolisthesis": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "pelvic_slope": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "direct_tilt": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "thoracic_slope": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "cervical_tilt": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "sacrum_angle": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "scoliosis_slope": {
+            "type" : "numerical",
+            "subtype" : "float"},
+        "Class_att": {
+            "type" : "categorical"}
+    },
+    "path": "data/real_lower_back_pain_num.csv"
+}
