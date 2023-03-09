@@ -1,15 +1,19 @@
+Date and time = 2023-03-09 19:36:05.255860 
+
+
+
 
 Classifier F1-scores and their Jaccard similarities::
                              f1_real  f1_fake  jaccard_similarity
 index                                                            
-DecisionTreeClassifier_fake   0.1797   0.1537              0.0655
-DecisionTreeClassifier_real   0.9480   0.1442              0.0736
-LogisticRegression_fake       0.1489   0.2293              0.1030
-LogisticRegression_real       0.6170   0.1655              0.0860
-MLPClassifier_fake            0.1584   0.1442              0.0602
-MLPClassifier_real            0.6690   0.1206              0.0791
-RandomForestClassifier_fake   0.1678   0.1868              0.0973
-RandomForestClassifier_real   0.9385   0.1324              0.0695
+DecisionTreeClassifier_fake   0.1513   0.1749              0.0902
+DecisionTreeClassifier_real   0.9645   0.1726              0.0959
+LogisticRegression_fake       0.1324   0.1962              0.0916
+LogisticRegression_real       0.5768   0.1513              0.0973
+MLPClassifier_fake            0.1418   0.2246              0.1463
+MLPClassifier_real            0.7494   0.1608              0.0736
+RandomForestClassifier_fake   0.1466   0.1820              0.1016
+RandomForestClassifier_real   0.9551   0.1560              0.0818
 
 Privacy results:
                                          result
@@ -27,5 +31,5 @@ Results:
 Basic statistics                                0.9958
 Correlation column correlations                 0.2734
 Mean Correlation between fake and real columns  0.8081
-1 - MAPE Estimator results                      0.4819
-Similarity Score                                0.6398
+1 - MAPE Estimator results                      0.4194
+Similarity Score                                0.6242
