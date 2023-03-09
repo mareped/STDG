@@ -1,0 +1,31 @@
+
+Classifier F1-scores and their Jaccard similarities::
+                             f1_real  f1_fake  jaccard_similarity
+index                                                            
+DecisionTreeClassifier_fake   0.1797   0.1537              0.0655
+DecisionTreeClassifier_real   0.9480   0.1442              0.0736
+LogisticRegression_fake       0.1489   0.2293              0.1030
+LogisticRegression_real       0.6170   0.1655              0.0860
+MLPClassifier_fake            0.1584   0.1442              0.0602
+MLPClassifier_real            0.6690   0.1206              0.0791
+RandomForestClassifier_fake   0.1678   0.1868              0.0973
+RandomForestClassifier_real   0.9385   0.1324              0.0695
+
+Privacy results:
+                                         result
+Duplicate rows between sets (real/fake)  (0, 0)
+nearest neighbor mean                    2.2005
+nearest neighbor std                     0.4939
+
+Miscellaneous results:
+                                  Result
+Column Correlation Distance RMSE  0.1926
+Column Correlation distance MAE   0.1154
+
+Results:
+                                                result
+Basic statistics                                0.9958
+Correlation column correlations                 0.2734
+Mean Correlation between fake and real columns  0.8081
+1 - MAPE Estimator results                      0.4819
+Similarity Score                                0.6398
