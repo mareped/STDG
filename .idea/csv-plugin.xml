@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="\data\lower_back_pain\ctgan_20_epochs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\data\lower_back_pain\lower_back_pain_num.csv">
           <value>
             <Attribute>
@@ -31,7 +38,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\evaluation\results\ctgan\lower_back_pain\ctgan_loss_lower_back_pain_20_epochs.csv">
+        <entry key="\evaluation\results\lower_back_pain\ctgan_20_epochs\ctgan_loss.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
