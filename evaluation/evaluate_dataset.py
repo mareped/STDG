@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import sys
 import datetime
 
-
 # IMPORTANT: DEFINE ALL GLOBAL ARGUMENTS BEFORE RUNNING SCRIPT
 
 # define dataset name you are using (lower_back_pain, obesity)
@@ -14,10 +13,10 @@ dataset = 'obesity'
 
 # Define where the real and fake data path is
 real = '../data/' + dataset + '/obesity_num.csv'
-fake = '../data/' + dataset + '/ctgan.csv'
+fake = '../data/' + dataset + '/copulagan.csv'
 
 # what folder to save results
-result_path = "results/ctgan/obesity"
+result_path = "results/copulagan/obesity"
 
 
 def get_cat_columns_from_datasets(data=dataset):
@@ -54,6 +53,8 @@ def table_ev(real_path, fake_path, data=dataset, visual=True, plot_path="results
 e = datetime.datetime.now()
 original_stdout = sys.stdout
 
+# TODO: move this into table_ev method
+
 # Logs the results to file
 with open(result_path + "/results.txt", 'w') as f:
     sys.stdout = f
@@ -78,7 +79,5 @@ def column_correlation(path, save=False, save_path='plots/xgan_matrix.png'):
 
     plt.show()
 
-
-# column_correlation(real, save=True, save_path='results/ctgan/obesity/real_corrmatrix.png')
-# column_correlation(fake, save=True, save_path='results/ctgan/obesity/fake_corrmatrix.png')
-
+# column_correlation(real, save=True, save_path='results/obesity_real_corrmatrix.png')
+# column_correlation(fake, save=True, save_path='results/ctgan/obesity_2/fake_corrmatrix.png')

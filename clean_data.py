@@ -1,8 +1,5 @@
 import pandas as pd
 
-pd.options.display.max_columns = None
-pd.options.display.max_rows = None
-
 df = pd.read_csv('data/obesity/obesity.csv')
 
 
@@ -17,7 +14,7 @@ cat_columns = df.select_dtypes(['object']).columns
 df[cat_columns] = df[cat_columns].apply(lambda x: pd.factorize(x)[0])
 
 
-df.to_csv('data/obesity/obesity_num.csv')
+df.to_csv('data/obesity/obesity_num_2.csv', index=False)
 
 """df= df.rename(columns = {'Col1': 'pelvic_incidence', 'Col2': 'pelvic_tilt',
                                     'Col3': 'lumbar_lordosis_angle', 'Col4': 'sacral_slope',
