@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-df = pd.read_csv('data/obesity/obesity_num.csv')
+df = pd.read_csv('../data/obesity/obesity_num.csv')
 
 print(df)
 categorical_cols = ['Gender', 'family_history_with_overweight',

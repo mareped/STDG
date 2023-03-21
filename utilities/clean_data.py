@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv('data/obesity/obesity.csv')
+df = pd.read_csv('../data/obesity/obesity.csv')
 
 
 categorical_cols = ['Gender', 'family_history_with_overweight',

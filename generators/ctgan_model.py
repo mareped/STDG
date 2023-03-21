@@ -1,5 +1,5 @@
 ###################################################
-# CopulaGAN and CTGAN from the sdv library
+###################### CTGAN ######################
 ###################################################
 import pandas as pd
 import json
@@ -9,7 +9,6 @@ import os
 
 import plotly.graph_objects as go
 
-from sdmetrics.reports.single_table import QualityReport
 from sdv.metadata import SingleTableMetadata
 from sdv.single_table import CTGANSynthesizer
 
@@ -18,20 +17,17 @@ MODEL_NAME = 'ctgan'
 DATA_FILENAME = '../data/lower_back_pain/lower_back_pain_scaled.csv'
 METADATA_FILENAME = "../data/lower_back_pain/metadata.json"
 
-# HYPERPARAMETERS
-EPOCHS = 20
-BATCH_SIZE = 20
+# Hyperparameters
+EPOCHS = 1200
+BATCH_SIZE = 100
 
+file_ending = f'{DATASET_NAME}/{MODEL_NAME}_{EPOCHS}_epochs_{BATCH_SIZE}_batch'
 real_data = pd.read_csv(DATA_FILENAME)
+
+# Load the metadata
 metadata = SingleTableMetadata.load_from_json(METADATA_FILENAME)
 
-RESULT_PATH = f'../evaluation/results/{DATASET_NAME}/{MODEL_NAME}_{EPOCHS}_epochs'
-
-"""
-# Used to save the output of training to a file
-tmp = sys.stdout
-output = StringIO()
-sys.stdout = output
+RESULT_PATH = f'../evaluation/results/' + file_ending
 
 model = CTGANSynthesizer(
     metadata,
@@ -39,28 +35,30 @@ model = CTGANSynthesizer(
     epochs=EPOCHS,
     batch_size=BATCH_SIZE)
 
+# Used to save the output of training to a file
+tmp = sys.stdout
+output = StringIO()
+sys.stdout = output
+
+# Fits the data to the model
 model.fit(real_data)
+# Ends the saving of output
 sys.stdout = tmp
 
-model_path = f'../saved_models/{DATASET_NAME}/{MODEL_NAME}_{EPOCHS}_epochs.pkl'
+model_path = f'../saved_models/' + file_ending + '.pkl'
 model.save(model_path)
 
+# Load saved model
 loaded = CTGANSynthesizer.load(model_path)
-new_data = loaded.sample(num_rows=len(real_data),
-                         output_file_path=f"../data/{DATASET_NAME}/{MODEL_NAME}_{EPOCHS}_epochs.csv")
 
-new = pd.read_csv(f"../data/{DATASET_NAME}/{MODEL_NAME}_{EPOCHS}_epochs.csv")
+synthetic_data_path = f'../data/' + file_ending + '.csv'
 
+# Create synthetic data
+synthetic_data = loaded.sample(num_rows=len(real_data),
+                               output_file_path=synthetic_data_path)
 
-def create_metadata(real_data):
-    metadata = SingleTableMetadata()
-    metadata.detect_from_dataframe(data=real_data)
-    python_dict = metadata.to_dict()
-    python_dict['columns']['Class_att'] = {'sdtype': 'categorical'}
-    json_object = json.dumps(python_dict, indent=4)
-    print(json_object)
-
-
+# Read the synthetic data file
+synthetic_df = pd.read_csv(synthetic_data_path)
 
 
 def save_loss_values():
@@ -87,8 +85,6 @@ def save_loss_values():
 
     loss_values.to_csv(RESULT_PATH + f'/{MODEL_NAME}_loss.csv', index=False)
 
-"""
-
 
 def plot_loss(save=False):
     path = RESULT_PATH + f'/{MODEL_NAME}_loss.csv'
@@ -111,7 +107,11 @@ def plot_loss(save=False):
         fig.write_image(RESULT_PATH + f'/{MODEL_NAME}_loss_graph.png')
 
 
-def evaluate_data(original_data, synthetic_data, metadata_dict):
-    rep = QualityReport()
+save_loss_values()
+plot_loss(True)
 
-    return rep.generate(original_data, synthetic_data, metadata_dict)
+# Save the model parameters to results
+parameters = model.get_parameters()
+with open(f'{RESULT_PATH}/hyperparameters_training.txt', 'w') as fp:
+    json.dump(parameters, fp)
+

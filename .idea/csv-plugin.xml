@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\data\lower_back_pain\ctgan_800_epochs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\data\lower_back_pain\lower_back_pain_num.csv">
           <value>
             <Attribute>
