@@ -4,22 +4,31 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import sys
+import os
 import datetime
 
 # IMPORTANT: DEFINE ALL GLOBAL ARGUMENTS BEFORE RUNNING SCRIPT
 
 # define dataset name you are using (lower_back_pain, obesity)
-dataset = 'obesity'
+DATASET_NAME = 'lower_back_pain'
 
-# Define where the real and fake data path is
-real = '../data/' + dataset + '/obesity_num.csv'
-fake = '../data/' + dataset + '/copulagan.csv'
+# define dataset model you are using (ctgan, copulagan)
+MODEL_NAME = 'copulagan'
 
-# what folder to save results
-result_path = "results/copulagan/obesity"
+# Hyperparameters
+EPOCHS = 800
+BATCH_SIZE = 100
+
+file_ending = f'{MODEL_NAME}_{EPOCHS}_epochs_{BATCH_SIZE}_batch'
+
+# Define where the real and fake data path is. IMPORTANT: change real file name
+real = f'../data/{DATASET_NAME}/lower_back_pain_scaled.csv'
+fake = f'../data/{DATASET_NAME}/' + file_ending + '.csv'
+
+RESULT_PATH = f'../evaluation/results/{DATASET_NAME}/' + file_ending
 
 
-def get_cat_columns_from_datasets(data=dataset):
+def get_cat_columns_from_datasets(data=DATASET_NAME):
     cat_cols = []
     target = ""
     if data == "lower_back_pain":
@@ -37,31 +46,29 @@ def get_cat_columns_from_datasets(data=dataset):
     return cat_cols, target
 
 
-def table_ev(real_path, fake_path, data=dataset, visual=True, plot_path="results/test"):
+def table_ev(real_path, fake_path, data=DATASET_NAME, visual=True, plot_path=RESULT_PATH):
     cat_cols, target = get_cat_columns_from_datasets(data)
 
-    real, fake = load_data(real_path, fake_path)
+    r_data, f_data = load_data(real_path, fake_path)
 
-    table_evaluator = TableEvaluator(real, fake, cat_cols=cat_cols)
+    if not os.path.exists(RESULT_PATH):
+        os.makedirs(RESULT_PATH)
 
-    table_evaluator.evaluate(target_col=target)
+    e = datetime.datetime.now()
+    original_stdout = sys.stdout
+
+    # Logs the results to file
+    with open(RESULT_PATH + "/results.txt", 'w') as f:
+        sys.stdout = f
+        print("Date and time = %s" % e, "\n\n\n")
+        table_evaluator = TableEvaluator(r_data, f_data, cat_cols=cat_cols)
+        table_evaluator.evaluate(target_col=target)
+
+        # Reset the standard output
+        sys.stdout = original_stdout
 
     if visual:
         table_evaluator.visual_evaluation(plot_path)
-
-
-e = datetime.datetime.now()
-original_stdout = sys.stdout
-
-# TODO: move this into table_ev method
-
-# Logs the results to file
-with open(result_path + "/results.txt", 'w') as f:
-    sys.stdout = f
-    print("Date and time = %s" % e, "\n\n\n")
-    table_ev(real, fake, visual=True, plot_path=result_path)
-    # Reset the standard output
-    sys.stdout = original_stdout
 
 
 def column_correlation(path, save=False, save_path='plots/xgan_matrix.png'):
@@ -79,5 +86,9 @@ def column_correlation(path, save=False, save_path='plots/xgan_matrix.png'):
 
     plt.show()
 
+
+#table_ev(real, fake, visual=True, plot_path=RESULT_PATH)
+
+column_correlation(fake, save=True, save_path=f'{RESULT_PATH}/corrmatrix.png')
+
 # column_correlation(real, save=True, save_path='results/obesity_real_corrmatrix.png')
-# column_correlation(fake, save=True, save_path='results/ctgan/obesity_2/fake_corrmatrix.png')
