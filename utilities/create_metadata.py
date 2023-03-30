@@ -20,5 +20,5 @@ python_dict = metadata.to_dict()
 
 json_object = json.dumps(python_dict, indent=4)
 
-with open("metadata.json", "w") as outfile:
+with open("../data/obesity/metadata.json", "w") as outfile:
     outfile.write(json_object)

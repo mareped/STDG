@@ -10,19 +10,19 @@ import datetime
 # IMPORTANT: DEFINE ALL GLOBAL ARGUMENTS BEFORE RUNNING SCRIPT
 
 # define dataset name you are using (lower_back_pain, obesity)
-DATASET_NAME = 'lower_back_pain'
+DATASET_NAME = 'obesity'
 
 # define dataset model you are using (ctgan, copulagan)
 MODEL_NAME = 'copulagan'
 
 # Hyperparameters
-EPOCHS = 800
+EPOCHS = 400
 BATCH_SIZE = 100
 
 file_ending = f'{MODEL_NAME}_{EPOCHS}_epochs_{BATCH_SIZE}_batch'
 
 # Define where the real and fake data path is. IMPORTANT: change real file name
-real = f'../data/{DATASET_NAME}/lower_back_pain_scaled.csv'
+real = f'../data/{DATASET_NAME}/{DATASET_NAME}_scaled.csv'
 fake = f'../data/{DATASET_NAME}/' + file_ending + '.csv'
 
 RESULT_PATH = f'../evaluation/results/{DATASET_NAME}/' + file_ending
@@ -87,7 +87,7 @@ def column_correlation(path, save=False, save_path='plots/xgan_matrix.png'):
     plt.show()
 
 
-#table_ev(real, fake, visual=True, plot_path=RESULT_PATH)
+# table_ev(real, fake, visual=True, plot_path=RESULT_PATH)
 
 column_correlation(fake, save=True, save_path=f'{RESULT_PATH}/corrmatrix.png')
 

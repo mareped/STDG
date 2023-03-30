@@ -5,17 +5,18 @@ from sdv.metadata import SingleTableMetadata
 from sdv.evaluation.single_table import evaluate_quality
 import pandas as pd
 
-METADATA_FILENAME = "../data/lower_back_pain/metadata.json"
+METADATA_FILENAME = "../data/obesity/metadata.json"
 
-df = pd.read_csv('../data/lower_back_pain/lower_back_pain_scaled.csv')
+df = pd.read_csv('../data/obesity/obesity_scaled.csv')
 
 metadata = SingleTableMetadata.load_from_json(METADATA_FILENAME)
 
 model = CopulaGANSynthesizer(
-   metadata= metadata,
-   epochs=800,
-   batch_size=40,
-   verbose= False
+    metadata=metadata,
+    epochs= 400,
+    batch_size=100,
+    verbose=False,
+    enforce_rounding=False
 )
 model.fit(df)
 synthetic_data = model.sample(len(df))

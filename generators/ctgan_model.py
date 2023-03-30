@@ -12,14 +12,16 @@ import plotly.graph_objects as go
 from sdv.metadata import SingleTableMetadata
 from sdv.single_table import CTGANSynthesizer
 
-DATASET_NAME = 'lower_back_pain'
+DATASET_NAME = 'obesity'
 MODEL_NAME = 'ctgan'
-DATA_FILENAME = '../data/lower_back_pain/lower_back_pain_scaled.csv'
-METADATA_FILENAME = "../data/lower_back_pain/metadata.json"
 
 # Hyperparameters
-EPOCHS = 1200
-BATCH_SIZE = 100
+EPOCHS = 300
+BATCH_SIZE = 50
+
+
+DATA_FILENAME = f'../data/{DATASET_NAME}/{DATASET_NAME}_scaled.csv'
+METADATA_FILENAME = f"../data/{DATASET_NAME}/metadata.json"
 
 file_ending = f'{DATASET_NAME}/{MODEL_NAME}_{EPOCHS}_epochs_{BATCH_SIZE}_batch'
 real_data = pd.read_csv(DATA_FILENAME)
@@ -33,7 +35,8 @@ model = CTGANSynthesizer(
     metadata,
     verbose=True,
     epochs=EPOCHS,
-    batch_size=BATCH_SIZE)
+    batch_size=BATCH_SIZE,
+    enforce_rounding=False)
 
 # Used to save the output of training to a file
 tmp = sys.stdout
