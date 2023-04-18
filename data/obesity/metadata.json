@@ -1,0 +1,56 @@
+{
+    "columns": {
+        "Gender": {
+            "sdtype": "categorical"
+        },
+        "Age": {
+            "sdtype": "numerical"
+        },
+        "Height": {
+            "sdtype": "numerical"
+        },
+        "Weight": {
+            "sdtype": "numerical"
+        },
+        "family_history_with_overweight": {
+            "sdtype": "categorical"
+        },
+        "FAVC": {
+            "sdtype": "categorical"
+        },
+        "FCVC": {
+            "sdtype": "numerical"
+        },
+        "NCP": {
+            "sdtype": "numerical"
+        },
+        "CAEC": {
+            "sdtype": "categorical"
+        },
+        "SMOKE": {
+            "sdtype": "categorical"
+        },
+        "CH2O": {
+            "sdtype": "numerical"
+        },
+        "SCC": {
+            "sdtype": "categorical"
+        },
+        "FAF": {
+            "sdtype": "numerical"
+        },
+        "TUE": {
+            "sdtype": "numerical"
+        },
+        "CALC": {
+            "sdtype": "categorical"
+        },
+        "MTRANS": {
+            "sdtype": "categorical"
+        },
+        "NObeyesdad": {
+            "sdtype": "categorical"
+        }
+    },
+    "METADATA_SPEC_VERSION": "SINGLE_TABLE_V1"
+}
