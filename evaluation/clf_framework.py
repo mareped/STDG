@@ -2,18 +2,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-from utilities.plots import plot_multiclass_roc, plot_binaryclass_roc
-from config import DataConfig
+from utilities.plots import plot_multiclass_roc, plot_binaryclass_roc, column_correlation_plot
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix, f1_score
+from sklearn.metrics import f1_score
 from sklearn.preprocessing import label_binarize
 
 
-class ClassifierEvaluator:
+class ClassifierFramework:
+    classifiers = {
+        "Random Forest": RandomForestClassifier(n_estimators=1000, random_state=42),
+        "Logistic Regression": LogisticRegression(C=100, penalty='l2', solver='newton-cg'),
+        "MLP Classifier": MLPClassifier(max_iter=300, activation='relu', solver='adam')
+    }
+
     def __init__(self):
         self.classes = None
 
@@ -53,71 +58,52 @@ class ClassifierEvaluator:
 
         return f1, y_true, y_pred_probs
 
-    def print_results(self, real_data, synth_data, mixed_data):
+    def print_results(self, real_data, synth_data, mixed_data, result_path):
 
-        classifiers = {
-            "Random Forest": RandomForestClassifier(n_estimators=1000, random_state=42),
-            "Logistic Regression": LogisticRegression(C=100, penalty='l2', solver='newton-cg'),
-            "MLP Classifier": MLPClassifier(max_iter=300, activation='relu', solver='adam')
-        }
+        classifiers = [
+            ("Random Forest", RandomForestClassifier(n_estimators=1000, random_state=42)),
+            ("Logistic Regression", LogisticRegression(C=100, penalty='l2', solver='newton-cg')),
+            ("MLP Classifier", MLPClassifier(max_iter=300, activation='relu', solver='adam'))
+        ]
 
         results = []
-        train_data = None
-        test_data1 = None
-        test_data2 = None
-
         fig, axes = plt.subplots(len(classifiers), 3, figsize=(15, 5 * len(classifiers)), squeeze=False)
 
-        for idx, (clf_name, clf) in enumerate(classifiers.items()):
+        for idx, (clf_name, clf) in enumerate(classifiers):
             for jdx, (data_name, data) in enumerate(
                     {"real": real_data, "synth": synth_data, "mixed": mixed_data}.items()):
 
                 ax = axes[idx, jdx]
+                data_dict = {"real": (real_data, real_data), "synth": (synth_data, real_data),
+                             "mixed": (mixed_data, real_data)}
 
-                if data_name == "real":
-                    train_data = real_data
-                    test_data1 = real_data
-                    test_data2 = synth_data
-                elif data_name == "synth":
-                    train_data = synth_data
-                    test_data1 = real_data
-                    test_data2 = synth_data
-                elif data_name == "mixed":
-                    train_data = mixed_data
-                    test_data1 = real_data
-                    test_data2 = mixed_data
+                # train data: data it is trained on, test_data1: the first data it is tested on
+                train_data, test_data1 = data_dict[data_name]
+                # test_data2: second data it is tested on
+                test_data2 = synth_data if data_name == "synth" else mixed_data
 
-                if train_data is not None:
-                    f1, y_true, y_score = self.evaluate_classifier(clf, train_data, test_data1)
-                    f1_2, y_true_2, y_score_2 = self.evaluate_classifier(clf, train_data, test_data2)
+                f1, y_true, y_score = self.evaluate_classifier(clf, train_data, test_data1)
+                f1_2, y_true_2, y_score_2 = self.evaluate_classifier(clf, train_data, test_data2)
 
-                    results.append({
-                        'classifier': clf_name,
-                        'train_data': data_name,
-                        'f1_real': f1,
-                        'f1_synth': f1_2
-                    })
+                results.append({
+                    'classifier': clf_name,
+                    'train_data': data_name,
+                    'f1_real': f1,
+                    'f1_synth': f1_2
+                })
 
-                    n_classes = len(self.classes)
+                n_classes = len(self.classes)
 
-                    if n_classes == 2:
-                        plot_binaryclass_roc(y_true, y_score, y_true_2, y_score_2, n_classes, f'{clf_name}_{data_name}',
-                                             ax=ax)
-                    else:
-                        plot_multiclass_roc(y_true, y_score, y_true_2, y_score_2, n_classes, f'{clf_name}_{data_name}',
-                                            ax=ax, plot_class_curves=False)
+                if n_classes == 2:
+                    plot_binaryclass_roc(y_true, y_score, y_true_2, y_score_2, n_classes, f'{clf_name}_{data_name}',
+                                         ax=ax)
+                else:
+                    plot_multiclass_roc(y_true, y_score, y_true_2, y_score_2, n_classes, f'{clf_name}_{data_name}',
+                                        ax=ax, plot_class_curves=False)
 
         plt.tight_layout()
+        plt.savefig(f'{result_path}/roc_curves.png')
         plt.show()
 
         df = pd.DataFrame(results)
-        return df
-
-
-# create a new instance of DataConfig, with the dataset (lower_back_pain, obesity)
-config = DataConfig(dataset_name='obesity', model_name='ctgan', epochs=800, batch_size=100)
-
-real_path, fake_path, mixed_path = config.real_path, config.fake_path, config.mixed_path
-
-evaluator = ClassifierEvaluator()
-evaluator.print_results(real_path, fake_path, mixed_path)
+        df.to_csv(f'{result_path}/classifier_results.csv', index=False)

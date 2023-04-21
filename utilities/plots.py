@@ -1,5 +1,50 @@
 import numpy as np
-from sklearn.metrics import auc, roc_curve
+from matplotlib import pyplot as plt
+import matplotlib.cm as cm
+import seaborn as sns
+from sklearn.metrics import auc, roc_curve, confusion_matrix
+import pandas as pd
+
+
+def column_correlation_plot(data_path, save_plot=False, save_path=None):
+    data = pd.read_csv(data_path)
+    f, ax = plt.subplots(figsize=(13, 8))
+    corr = data.corr()
+    sns.heatmap(corr,
+                cmap=sns.diverging_palette(220, 10, as_cmap=True),
+                vmin=-1.0, vmax=1.0,
+                square=True, ax=ax)
+    plt.title("Column Correlation")
+
+    if save_plot:
+        if save_plot is None:
+            raise Exception("Need to declare a Save Path")
+        plt.savefig(save_path)
+
+    plt.show()
+
+#TODO: implement this into to clf framework!
+def plot_confusion_matrix(true_labels, predicted_labels, classes):
+    cm = confusion_matrix(true_labels, predicted_labels)
+    fig, ax = plt.subplots()
+    im = ax.imshow(cm, interpolation='nearest', cmap=cm.Blues)
+    ax.figure.colorbar(im, ax=ax)
+    ax.set(xticks=np.arange(cm.shape[1]),
+           yticks=np.arange(cm.shape[0]),
+           xticklabels=classes, yticklabels=classes,
+           ylabel='True label',
+           xlabel='Predicted label')
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+    fmt = 'd'
+    thresh = cm.max() / 2.
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(j, i, format(cm[i, j], fmt),
+                    ha="center", va="center",
+                    color="white" if cm[i, j] > thresh else "black")
+    fig.tight_layout()
+    return ax
 
 
 def compute_roc_auc(y_true, y_score, n_classes):
@@ -66,8 +111,8 @@ def plot_multiclass_roc(y_true_real, y_score_real, y_true_synth, y_score_synth, 
             label='macro-average - Synthetic (AUC = {0:0.2f})'.format(roc_auc_synth["macro"]),
             color='darkorange', linestyle=':', linewidth=4)
     if plot_class_curves:
-        colors_real = ax.cm.get_cmap('tab10', n_classes)(range(n_classes)).tolist()
-        colors_synth = ax.cm.get_cmap('tab10', n_classes)(range(n_classes)).tolist()
+        colors_real = plt.cm.get_cmap('tab10', n_classes)(range(n_classes)).tolist()
+        colors_synth = plt.cm.get_cmap('tab10', n_classes)(range(n_classes)).tolist()
         [ax.plot(fpr_real[i], tpr_real[i], color=colors_real[i], lw=lw) for i in range(n_classes)]
         [ax.plot(fpr_synth[i], tpr_synth[i], color=colors_synth[i], lw=lw, linestyle='--',
                  label='Class {0} - Synthetic (AUC = {1:0.2f})'.format(i, roc_auc_synth[i])) for i in range(n_classes)]

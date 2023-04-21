@@ -7,7 +7,7 @@ import pandas as pd
 
 METADATA_FILENAME = "../data/obesity/metadata.json"
 
-df = pd.read_csv('../data/obesity/obesity_scaled.csv')
+df = pd.read_csv('../data/obesity/old/obesity_scaled.csv')
 
 metadata = SingleTableMetadata.load_from_json(METADATA_FILENAME)
 

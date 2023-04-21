@@ -12,7 +12,17 @@ import plotly.graph_objects as go
 from sdv.metadata import SingleTableMetadata
 from sdv.single_table import CopulaGANSynthesizer
 
-DATASET_NAME = 'obesity'
+from config import DataConfig
+
+# create a new instance of DataConfig, with the dataset (lower_back_pain, obesity)
+config = DataConfig(dataset_name='lower_back_pain', model_name='ctgan', epochs=800, batch_size=20)
+
+real_path, fake_path, result_path, meta_data_path, model_path = \
+    config.real_path, config.fake_path, config.result_path, config.meta_data, config.model_path
+dataset_name, model_name = config.dataset_name, config.model_name
+epochs, batch_size = config.epochs, config.batch_size
+
+"""DATASET_NAME = 'obesity'
 MODEL_NAME = 'copulagan'
 
 # Hyperparameters
@@ -23,18 +33,20 @@ DATA_FILENAME = f'../data/{DATASET_NAME}/{DATASET_NAME}_scaled.csv'
 METADATA_FILENAME = f"../data/{DATASET_NAME}/metadata.json"
 
 file_ending = f'{DATASET_NAME}/{MODEL_NAME}_{EPOCHS}_epochs_{BATCH_SIZE}_batch'
-real_data = pd.read_csv(DATA_FILENAME)
+
+RESULT_PATH = f'../evaluation/results/' + file_ending"""
+
 
 # Load the metadata
-metadata = SingleTableMetadata.load_from_json(METADATA_FILENAME)
+metadata = SingleTableMetadata.load_from_json(meta_data_path)
+real_data = pd.read_csv(dataset_name)
 
-RESULT_PATH = f'../evaluation/results/' + file_ending
 
 model = CopulaGANSynthesizer(
     metadata,
     verbose=True,
-    epochs=EPOCHS,
-    batch_size=BATCH_SIZE,
+    epochs=epochs,
+    batch_size=batch_size,
     enforce_rounding=False)
 
 # Used to save the output of training to a file
@@ -47,20 +59,17 @@ model.fit(real_data)
 # Ends the saving of output
 sys.stdout = tmp
 
-model_path = f'../saved_models/' + file_ending + '.pkl'
 model.save(model_path)
 
 # Load saved model
 loaded = CopulaGANSynthesizer.load(model_path)
 
-synthetic_data_path = f'../data/' + file_ending + '.csv'
-
 # Create synthetic data
 synthetic_data = loaded.sample(num_rows=len(real_data),
-                               output_file_path=synthetic_data_path)
+                               output_file_path=fake_path)
 
 # Read the synthetic data file
-synthetic_df = pd.read_csv(synthetic_data_path)
+synthetic_df = pd.read_csv(fake_path)
 
 
 def save_loss_values():
@@ -80,16 +89,16 @@ def save_loss_values():
     loss_values['Discriminator Loss'] = loss_values['Discriminator Loss'].str.extract('([-+]?\d*\.\d+|\d+)').astype(
         float)
 
-    loss_values_path = RESULT_PATH
+    loss_values_path = result_path
     # Check whether the specified path exists or not
     if not os.path.exists(loss_values_path):
         os.makedirs(loss_values_path)
 
-    loss_values.to_csv(RESULT_PATH + f'/{MODEL_NAME}_loss.csv', index=False)
+    loss_values.to_csv(result_path + f'/{model_name}_loss.csv', index=False)
 
 
 def plot_loss(save=False):
-    path = RESULT_PATH + f'/{MODEL_NAME}_loss.csv'
+    path = result_path + f'/{model_name}_loss.csv'
     loss_values = pd.read_csv(path)
     # Plot loss function
     fig = go.Figure(data=[go.Scatter(x=loss_values['Epoch'], y=loss_values['Generator Loss'], name='Generator Loss'),
@@ -101,19 +110,19 @@ def plot_loss(save=False):
                       legend_orientation="h",
                       legend=dict(x=0, y=1.1))
 
-    title = 'CTGAN loss function for dataset: ' + DATASET_NAME
+    title = 'CTGAN loss function for dataset: ' + dataset_name
     fig.update_layout(title=title, xaxis_title='Epoch', yaxis_title='Loss')
     fig.show()
 
     if save:
-        fig.write_image(RESULT_PATH + f'/{MODEL_NAME}_loss_graph.png')
+        fig.write_image(result_path + f'/{model_name}_loss_graph.png')
 
 
-save_loss_values()
+# save_loss_values()
 plot_loss(True)
 
 # Save the model parameters to results
 parameters = model.get_parameters()
-with open(f'{RESULT_PATH}/hyperparameters_training.txt', 'w') as fp:
+with open(f'{result_path}/hyperparameters_training.txt', 'w') as fp:
     json.dump(parameters, fp)
 
