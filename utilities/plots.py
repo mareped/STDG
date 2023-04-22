@@ -1,9 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
-import matplotlib.cm as cm
 import seaborn as sns
 from sklearn.metrics import auc, roc_curve, confusion_matrix
 import pandas as pd
+from matplotlib import cm
+
 
 
 def column_correlation_plot(data_path, save_plot=False, save_path=None):
@@ -23,11 +24,11 @@ def column_correlation_plot(data_path, save_plot=False, save_path=None):
 
     plt.show()
 
-#TODO: implement this into to clf framework!
-def plot_confusion_matrix(true_labels, predicted_labels, classes):
-    cm = confusion_matrix(true_labels, predicted_labels)
+
+def plot_cmf(true_labels, predicted_labels, classes):
+    cm = confusion_matrix(true_labels, predicted_labels, labels=classes)
     fig, ax = plt.subplots()
-    im = ax.imshow(cm, interpolation='nearest', cmap=cm.Blues)
+    im = ax.imshow(cm, interpolation='nearest', cmap='Blues')
     ax.figure.colorbar(im, ax=ax)
     ax.set(xticks=np.arange(cm.shape[1]),
            yticks=np.arange(cm.shape[0]),
@@ -44,7 +45,7 @@ def plot_confusion_matrix(true_labels, predicted_labels, classes):
                     ha="center", va="center",
                     color="white" if cm[i, j] > thresh else "black")
     fig.tight_layout()
-    return ax
+    plt.show()
 
 
 def compute_roc_auc(y_true, y_score, n_classes):

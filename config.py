@@ -6,7 +6,7 @@ The configuration includes the number of epochs, batch size, file name, and file
 
 
 class DataConfig:
-    ALLOWED_DATASETS = ['lower_back_pain', 'obesity']
+    ALLOWED_DATASETS = ['lower_back_pain', 'obesity', 'cardio']
     ALLOWED_MODELS = ['ctgan', 'copulagan']
 
     def __init__(self, dataset_name, model_name, epochs, batch_size):
@@ -23,9 +23,9 @@ class DataConfig:
         self.batch_size = batch_size
         self.file_ending = f'{model_name}_{epochs}_epochs_{batch_size}_batch'
         # TODO: remember to add csv to end of real,fake and mixed path
-        self.real_path = f'../data/{dataset_name}/{dataset_name}' #.csv
-        self.fake_path = f'../data/{dataset_name}/' + self.file_ending #+ '.csv'
-        self.mixed_path = f'../data/{dataset_name}/{model_name}_mix' #+ '.csv'
+        self.real_path = f'../data/{dataset_name}/{dataset_name}' + '.csv'
+        self.fake_path = f'../data/{dataset_name}/' + self.file_ending  + '.csv'
+        self.mixed_path = f'../data/{dataset_name}/{model_name}_mix' + '.csv'
         self.result_path = f'../evaluation/results/{dataset_name}/' + self.file_ending
         self.meta_data = f'../data/{dataset_name}/metadata.json'
         self.model_path = f'../saved_models/{dataset_name}/' + self.file_ending + '.pkl'

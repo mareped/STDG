@@ -2,7 +2,7 @@ from config import DataConfig
 from generators.copulagan_ctgan_models import main
 
 # New instance of DataConfig, with dataset (lower_back_pain, obesity), model_name(ctgan, copulagan), epochs, batch size
-config = DataConfig(dataset_name='obesity', model_name='copulagan', epochs=350, batch_size=100)
+config = DataConfig(dataset_name='cardio', model_name='ctgan', epochs=300, batch_size=50)
 
 real_path, fake_path, result_path, meta_data_path, model_path = \
     config.real_path, config.fake_path, config.result_path, config.meta_data, config.model_path

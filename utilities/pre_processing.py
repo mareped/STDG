@@ -1,17 +1,5 @@
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
-
-
-def print_column_types(df):
-    for col in df.columns:
-        print(f"{col}: {df[col].dtype}")
-
-
-# Assign specific columns to categorical values
-def assign_categorical(df, cols):
-    for col in cols:
-        df[col] = pd.Categorical(df[col])
-    return df
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 
 # Scale all the numeric values, except the categorical columns and the label
@@ -69,36 +57,27 @@ def one_hot_encode(df, categorical_columns, label):
     return df_copy
 
 
-# Creates a mixed dataset of two dataframes
-def merge_datasets(df1, df2):
-    # Concatenate the two DataFrames
-    merged_df = pd.concat([df1, df2])
 
-    # Shuffle the rows of the merged DataFrame
-    merged_df = merged_df.sample(frac=1).reset_index(drop=True)
-
-    return merged_df
 
 
 # For obesity
-data = pd.read_csv('../data/obesity/copulagan_350_epochs_100_batch.csv')
+"""data = pd.read_csv('../data/obesity/ctgan_300_epochs_50_batch.csv')
 
 label = 'NObeyesdad'
 categorical_cols = ['Gender', 'family_history_with_overweight',
                     'FAVC', 'CAEC', 'SMOKE', 'SCC', 'CALC', 'MTRANS', 'NObeyesdad']
 
-
-data = min_max_scale_df(data, categorical_cols, label)
+# data = min_max_scale_df(data, categorical_cols, label)
 data = encode_all_cat_cols(data, categorical_cols)
 
 #data = one_hot_encode(data, categorical_cols, label)
-data.to_csv('../data/obesity/copulagan_350_epochs_100_batch.csv', index=False)
+data.to_csv('../data/obesity/ctgan_300_epochs_50_batch_encoded.csv', index=False)"""
 
-"""# For lbp
-data = pd.read_csv('../data/lower_back_pain/original_lbp.csv')
+# For lbp
+"""
+data = pd.read_csv('../data/lower_back_pain/copulagan_800_epochs_100_batch.csv')
 label = 'Class_att'
-data = label_encode(data, label)
+data = label_encode_one_col(data, label)
 categorical_cols = []
 data = min_max_scale_df(data, categorical_cols, label)
-data.to_csv('../data/lower_back_pain/lower_back_pain.csv', index=False)
-"""
+data.to_csv('../data/lower_back_pain/copulagan_800_epochs_100_batch_prep.csv', index=False)"""

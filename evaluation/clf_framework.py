@@ -2,14 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-from utilities.plots import plot_multiclass_roc, plot_binaryclass_roc, column_correlation_plot
+from utilities.plots import plot_multiclass_roc, plot_binaryclass_roc, plot_cmf
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
-from sklearn.preprocessing import label_binarize
+from sklearn.preprocessing import label_binarize, MinMaxScaler
 
 
 class ClassifierFramework:
@@ -21,6 +21,7 @@ class ClassifierFramework:
 
     def __init__(self):
         self.classes = None
+        self.scaler = MinMaxScaler()
 
     def read_data(self, dataset_path):
         dataset = pd.read_csv(dataset_path)
@@ -39,12 +40,26 @@ class ClassifierFramework:
 
         return X_train, X_test, y_train, y_test
 
-    def evaluate_classifier(self, clf, dataset1, dataset2):
-        X_train, X_test, y_train, y_test = self.split_data(dataset1)
-        x_2, y_2 = self.read_data(dataset2)
+    def train_test(self, clf, dataset):
+        X_train, X_test, y_train, y_test = self.split_data(dataset)
+        X_train = self.scaler.fit_transform(X_train)
+        X_test = self.scaler.transform(X_test)
 
         clf.fit(X_train, y_train)
-        y_pred = clf.predict(x_2)
+        return clf, X_test, y_test
+
+    def plot_confusion_matrix(self, clf, dataset):
+        trained_clf, X_test, y_test = self.train_test(clf, dataset)
+        y_pred = trained_clf.predict(X_test)
+        plot_cmf(y_test, y_pred, self.classes)
+
+    def train_on_1_test_on_2(self, clf, dataset1, dataset2):
+        trained_clf, _, _ = self.train_test(clf, dataset1)
+        x_2, y_2 = self.read_data(dataset2)
+
+        x_2 = self.scaler.fit_transform(x_2)
+
+        y_pred = trained_clf.predict(x_2)
 
         if len(self.classes) == 2:
             y_pred_probs = clf.predict_proba(x_2)[:, 1]  # Predicted probabilities of the positive class
@@ -58,7 +73,7 @@ class ClassifierFramework:
 
         return f1, y_true, y_pred_probs
 
-    def print_results(self, real_data, synth_data, mixed_data, result_path):
+    def print_t1t2_results(self, real_data, synth_data, mixed_data, result_path):
 
         classifiers = [
             ("Random Forest", RandomForestClassifier(n_estimators=1000, random_state=42)),
@@ -82,8 +97,8 @@ class ClassifierFramework:
                 # test_data2: second data it is tested on
                 test_data2 = synth_data if data_name == "synth" else mixed_data
 
-                f1, y_true, y_score = self.evaluate_classifier(clf, train_data, test_data1)
-                f1_2, y_true_2, y_score_2 = self.evaluate_classifier(clf, train_data, test_data2)
+                f1, y_true, y_score = self.train_on_1_test_on_2(clf, train_data, test_data1)
+                f1_2, y_true_2, y_score_2 = self.train_on_1_test_on_2(clf, train_data, test_data2)
 
                 results.append({
                     'classifier': clf_name,
