@@ -2,136 +2,123 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+from utilities.plots import plot_multiclass_roc, plot_binaryclass_roc, plot_cmf
+
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix, roc_auc_score, auc, f1_score, roc_curve
-
-# define dataset name you are using (lower_back_pain, obesity)
-DATASET_NAME = 'lower_back_pain'
-
-# define dataset model you are using (ctgan, copulagan)
-MODEL_NAME = 'ctgan'
-
-# Hyperparameters
-EPOCHS = 800
-BATCH_SIZE = 100
-
-file_ending = f'{MODEL_NAME}_{EPOCHS}_epochs_{BATCH_SIZE}_batch'
-
-# Define where the real and fake data path is. IMPORTANT: change real file name
-real_path = f'../data/{DATASET_NAME}/{DATASET_NAME}_scaled.csv'
-fake_path = f'../data/{DATASET_NAME}/' + file_ending + '.csv'
-mixed_path = f'../data/{DATASET_NAME}/' + file_ending + '.csv'
+from sklearn.metrics import f1_score
+from sklearn.preprocessing import label_binarize, MinMaxScaler
 
 
-def read_data(dataset_path):
-    dataset = pd.read_csv(dataset_path)
-
-    x = dataset.iloc[:, :-1].values
-    y = dataset.iloc[:, -1].values
-
-    return x, y
-
-
-def split_data(dataset_path):
-    x, y = read_data(dataset_path)
-
-    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=16)
-
-    return X_train, X_test, y_train, y_test
-
-
-def evaluate_classifier(clf, dataset1, dataset2):
-    X_train, X_test, y_train, y_test = split_data(dataset1)
-    x_2, y_2 = read_data(dataset2)
-    clf.fit(X_train, y_train)
-    y_pred = clf.predict(x_2)
-
-    y_pred_probs = clf.predict_proba(x_2)[:, 1]  # Predicted probabilities of the positive class
-
-    f1 = f1_score(y_2, y_pred, average='weighted')
-
-    return f1, y_2, y_pred_probs
-
-
-def plot_roc_binary(y_true_real, y_score_real, y_true_synth, y_score_synth, clf_name, ax=None):
-    """Args:
-        y_true_real: True labels of the binary classifier for real data.
-        y_score_real: Predicted scores or probabilities of the positive class for real data.
-        y_true_synth: True labels of the binary classifier for synthetic data.
-        y_score_synth: Predicted scores or probabilities of the positive class for synthetic data.
-        classifier_name: Name of the classifier for setting the title of the plot."""
-
-    # Compute the false positive rate, true positive rate, and thresholds for real data
-    fpr_real, tpr_real, thresholds_real = roc_curve(y_true_real, y_score_real)
-    # Compute the false positive rate, true positive rate, and thresholds for synthetic data
-    fpr_synth, tpr_synth, thresholds_synth = roc_curve(y_true_synth, y_score_synth)
-    # Compute the area under the ROC curve for real data
-    roc_auc_real = auc(fpr_real, tpr_real)
-    # Compute the area under the ROC curve for synthetic data
-    roc_auc_synth = auc(fpr_synth, tpr_synth)
-
-    ax.plot(fpr_real, tpr_real, color='b', label='Real (AUC = %0.2f)' % roc_auc_real)
-    ax.plot(fpr_synth, tpr_synth, color='g', label='Synthetic (AUC = %0.2f)' % roc_auc_synth)
-    ax.plot([0, 1], [0, 1], color='r', linestyle='--', lw=2, label='Random', alpha=.8)
-    ax.set_xlabel('False Positive Rate')
-    ax.set_ylabel('True Positive Rate')
-    ax.set_title('ROC Curve for {}'.format(clf_name))
-    ax.legend()
-
-
-def print_results(real_data, synth_data, mixed_data):
+class ClassifierFramework:
     classifiers = {
         "Random Forest": RandomForestClassifier(n_estimators=1000, random_state=42),
         "Logistic Regression": LogisticRegression(C=100, penalty='l2', solver='newton-cg'),
         "MLP Classifier": MLPClassifier(max_iter=300, activation='relu', solver='adam')
     }
 
-    results = []
-    train_data = None
-    test_data1 = None
-    test_data2 = None
+    def __init__(self):
+        self.classes = None
+        self.scaler = MinMaxScaler()
 
-    fig, axes = plt.subplots(len(classifiers), 3, figsize=(15, 5*len(classifiers)), squeeze=False)
+    def read_data(self, dataset_path):
+        dataset = pd.read_csv(dataset_path)
 
+        x = dataset.iloc[:, :-1].values
+        y = dataset.iloc[:, -1].values
 
-    for idx, (clf_name, clf) in enumerate(classifiers.items()):
-        for jdx, (data_name, data) in enumerate({"real": real_data, "synth": synth_data, "mixed": mixed_data}.items()):
+        return x, y
 
-            ax = axes[idx, jdx]
+    def split_data(self, dataset_path):
+        x, y = self.read_data(dataset_path)
 
-            if data_name == "real":
-                train_data = real_data
-                test_data1 = real_data
-                test_data2 = synth_data
-            elif data_name == "synth":
-                train_data = synth_data
-                test_data1 = real_data
-                test_data2 = synth_data
-            elif data_name == "mixed":
-                train_data = mixed_data
-                test_data1 = real_data
-                test_data2 = mixed_data
+        self.classes = np.unique(y)
 
-            if train_data is not None:
-                train_test1_f1, y_true, y_score = evaluate_classifier(clf, train_data, test_data1)
-                train_test2_f1, y_true_2, y_score_2 = evaluate_classifier(clf, train_data, test_data2)
+        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=16)
+
+        return X_train, X_test, y_train, y_test
+
+    def train_test(self, clf, dataset):
+        X_train, X_test, y_train, y_test = self.split_data(dataset)
+        X_train = self.scaler.fit_transform(X_train)
+        X_test = self.scaler.transform(X_test)
+
+        clf.fit(X_train, y_train)
+        return clf, X_test, y_test
+
+    def plot_confusion_matrix(self, clf, dataset):
+        trained_clf, X_test, y_test = self.train_test(clf, dataset)
+        y_pred = trained_clf.predict(X_test)
+        plot_cmf(y_test, y_pred, self.classes)
+
+    def train_on_1_test_on_2(self, clf, dataset1, dataset2):
+        trained_clf, _, _ = self.train_test(clf, dataset1)
+        x_2, y_2 = self.read_data(dataset2)
+
+        x_2 = self.scaler.fit_transform(x_2)
+
+        y_pred = trained_clf.predict(x_2)
+
+        if len(self.classes) == 2:
+            y_pred_probs = clf.predict_proba(x_2)[:, 1]  # Predicted probabilities of the positive class
+        else:
+            y_pred_probs = clf.predict_proba(x_2)  # Predicted probabilities of all classes
+
+        # Binarize the true labels, in case it is a multiclass problem
+        y_true = label_binarize(y_2, classes=self.classes)
+
+        f1 = f1_score(y_2, y_pred, average='weighted')
+
+        return f1, y_true, y_pred_probs
+
+    def print_t1t2_results(self, real_data, synth_data, mixed_data, result_path):
+
+        classifiers = [
+            ("Random Forest", RandomForestClassifier(n_estimators=1000, random_state=42)),
+            ("Logistic Regression", LogisticRegression(C=100, penalty='l2', solver='newton-cg')),
+            ("MLP Classifier", MLPClassifier(max_iter=300, activation='relu', solver='adam'))
+        ]
+
+        results = []
+        fig, axes = plt.subplots(len(classifiers), 3, figsize=(15, 5 * len(classifiers)), squeeze=False)
+
+        for idx, (clf_name, clf) in enumerate(classifiers):
+            for jdx, (data_name, data) in enumerate(
+                    {"real": real_data, "synth": synth_data, "mixed": mixed_data}.items()):
+
+                ax = axes[idx, jdx]
+                data_dict = {"real": (real_data, real_data), "synth": (synth_data, real_data),
+                             "mixed": (mixed_data, real_data)}
+
+                # train data: data it is trained on, test_data1: the first data it is tested on
+                train_data, test_data1 = data_dict[data_name]
+                # test_data2: second data it is tested on
+                test_data2 = synth_data if data_name == "synth" else mixed_data
+
+                f1, y_true, y_score = self.train_on_1_test_on_2(clf, train_data, test_data1)
+                f1_2, y_true_2, y_score_2 = self.train_on_1_test_on_2(clf, train_data, test_data2)
 
                 results.append({
                     'classifier': clf_name,
                     'train_data': data_name,
-                    'f1_real': train_test1_f1,
-                    'f1_synth': train_test2_f1
+                    'f1_real': f1,
+                    'f1_synth': f1_2
                 })
 
-                plot_roc_binary(y_true, y_score, y_true_2, y_score_2, f'{clf_name}_{data_name}', ax=ax)
+                n_classes = len(self.classes)
 
-    plt.tight_layout()
-    plt.show()
+                if n_classes == 2:
+                    plot_binaryclass_roc(y_true, y_score, y_true_2, y_score_2, n_classes, f'{clf_name}_{data_name}',
+                                         ax=ax)
+                else:
+                    plot_multiclass_roc(y_true, y_score, y_true_2, y_score_2, n_classes, f'{clf_name}_{data_name}',
+                                        ax=ax, plot_class_curves=False)
 
-    df = pd.DataFrame(results)
-    return df
+        plt.tight_layout()
+        plt.savefig(f'{result_path}/roc_curves.png')
+        plt.show()
 
-print(print_results(real_path, fake_path, mixed_path))
+        df = pd.DataFrame(results)
+        df.to_csv(f'{result_path}/classifier_results.csv', index=False)

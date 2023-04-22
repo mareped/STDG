@@ -1,0 +1,47 @@
+{
+    "METADATA_SPEC_VERSION": "SINGLE_TABLE_V1",
+        "columns": {
+            "age": {
+                "sdtype": "numerical",
+                "computer_representation": "Float"
+
+            },
+            "gender": {
+                "sdtype": "categorical"
+            },
+            "height": {
+                "sdtype": "numerical",
+                "computer_representation": "Int64"
+            },
+            "weight": {
+                "sdtype": "numerical",
+                "computer_representation": "Float"
+            },
+            "ap_hi": {
+                "sdtype": "numerical",
+                "computer_representation": "Int64"
+            },
+            "ap_lo": {
+                "sdtype": "numerical",
+                "computer_representation": "Int64"
+            },
+            "cholesterol": {
+                "sdtype": "categorical"
+            },
+            "gluc": {
+                "sdtype": "categorical"
+            },
+            "smoke": {
+                "sdtype": "categorical"
+            },
+            "alco": {
+                "sdtype": "categorical"
+            },
+            "active": {
+                "sdtype": "categorical"
+            },
+            "cardio": {
+                "sdtype": "categorical"
+            }
+    }
+}

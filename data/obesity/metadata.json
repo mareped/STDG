@@ -4,13 +4,16 @@
             "sdtype": "categorical"
         },
         "Age": {
-            "sdtype": "numerical"
+            "sdtype": "numerical",
+            "computer_representation": "Float"
         },
         "Height": {
-            "sdtype": "numerical"
+            "sdtype": "numerical",
+            "computer_representation": "Float"
         },
         "Weight": {
-            "sdtype": "numerical"
+            "sdtype": "numerical",
+            "computer_representation": "Float"
         },
         "family_history_with_overweight": {
             "sdtype": "categorical"
@@ -19,10 +22,12 @@
             "sdtype": "categorical"
         },
         "FCVC": {
-            "sdtype": "numerical"
+            "sdtype": "numerical",
+            "computer_representation": "Float"
         },
         "NCP": {
-            "sdtype": "numerical"
+            "sdtype": "numerical",
+            "computer_representation": "Float"
         },
         "CAEC": {
             "sdtype": "categorical"
@@ -31,16 +36,19 @@
             "sdtype": "categorical"
         },
         "CH2O": {
-            "sdtype": "numerical"
+            "sdtype": "numerical",
+            "computer_representation": "Float"
         },
         "SCC": {
             "sdtype": "categorical"
         },
         "FAF": {
-            "sdtype": "numerical"
+            "sdtype": "numerical",
+            "computer_representation": "Float"
         },
         "TUE": {
-            "sdtype": "numerical"
+            "sdtype": "numerical",
+            "computer_representation": "Float"
         },
         "CALC": {
             "sdtype": "categorical"

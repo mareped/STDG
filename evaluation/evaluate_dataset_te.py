@@ -1,34 +1,17 @@
 from table_evaluator import load_data, TableEvaluator
-import seaborn as sns
-import pandas as pd
-import matplotlib.pyplot as plt
-
 import sys
 import os
 import datetime
 
-# IMPORTANT: DEFINE ALL GLOBAL ARGUMENTS BEFORE RUNNING SCRIPT
+from config import DataConfig
+from utilities.plots import column_correlation_plot
 
-# define dataset name you are using (lower_back_pain, obesity)
-DATASET_NAME = 'obesity'
+config = DataConfig(dataset_name='obesity', model_name='copulagan', epochs=400, batch_size=100)
 
-# define dataset model you are using (ctgan, copulagan)
-MODEL_NAME = 'copulagan'
-
-# Hyperparameters
-EPOCHS = 400
-BATCH_SIZE = 100
-
-file_ending = f'{MODEL_NAME}_{EPOCHS}_epochs_{BATCH_SIZE}_batch'
-
-# Define where the real and fake data path is. IMPORTANT: change real file name
-real = f'../data/{DATASET_NAME}/{DATASET_NAME}_scaled.csv'
-fake = f'../data/{DATASET_NAME}/' + file_ending + '.csv'
-
-RESULT_PATH = f'../evaluation/results/{DATASET_NAME}/' + file_ending
+real_path, fake_path, result_path = config.real_path, config.fake_path, config.result_path
 
 
-def get_cat_columns_from_datasets(data=DATASET_NAME):
+def get_cat_columns_from_datasets(data=config.dataset_name):
     cat_cols = []
     target = ""
     if data == "lower_back_pain":
@@ -46,19 +29,19 @@ def get_cat_columns_from_datasets(data=DATASET_NAME):
     return cat_cols, target
 
 
-def table_ev(real_path, fake_path, data=DATASET_NAME, visual=True, plot_path=RESULT_PATH):
+def table_ev(real_path, fake_path, data=config.dataset_name, visual=True, plot_path=result_path):
     cat_cols, target = get_cat_columns_from_datasets(data)
 
     r_data, f_data = load_data(real_path, fake_path)
 
-    if not os.path.exists(RESULT_PATH):
-        os.makedirs(RESULT_PATH)
+    if not os.path.exists(result_path):
+        os.makedirs(result_path)
 
     e = datetime.datetime.now()
     original_stdout = sys.stdout
 
     # Logs the results to file
-    with open(RESULT_PATH + "/results.txt", 'w') as f:
+    with open(result_path + "/results.txt", 'w') as f:
         sys.stdout = f
         print("Date and time = %s" % e, "\n\n\n")
         table_evaluator = TableEvaluator(r_data, f_data, cat_cols=cat_cols)
@@ -71,24 +54,9 @@ def table_ev(real_path, fake_path, data=DATASET_NAME, visual=True, plot_path=RES
         table_evaluator.visual_evaluation(plot_path)
 
 
-def column_correlation(path, save=False, save_path='plots/xgan_matrix.png'):
-    data = pd.read_csv(path)
-    f, ax = plt.subplots(figsize=(13, 8))
-    corr = data.corr()
-    sns.heatmap(corr,
-                cmap=sns.diverging_palette(220, 10, as_cmap=True),
-                vmin=-1.0, vmax=1.0,
-                square=True, ax=ax)
-    plt.title("Column Correlation")
-
-    if save:
-        plt.savefig(save_path)
-
-    plt.show()
-
 
 # table_ev(real, fake, visual=True, plot_path=RESULT_PATH)
 
-column_correlation(fake, save=True, save_path=f'{RESULT_PATH}/corrmatrix.png')
+column_correlation_plot(fake_path, save_plot=False, save_path=f'{result_path}/corrmatrix.png')
 
 # column_correlation(real, save=True, save_path='results/obesity_real_corrmatrix.png')

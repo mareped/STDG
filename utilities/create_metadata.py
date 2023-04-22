@@ -4,7 +4,9 @@ import pandas as pd
 
 from sdv.metadata import SingleTableMetadata
 
-DATA_FILENAME = '../data/obesity/obesity_scaled.csv'
+import csv
+
+DATA_FILENAME = '../data/cardio/cardio.csv'
 
 real_data = pd.read_csv(DATA_FILENAME)
 
@@ -12,13 +14,10 @@ metadata = SingleTableMetadata()
 metadata.detect_from_dataframe(data=real_data)
 print(metadata)
 
-
 python_dict = metadata.to_dict()
+print(python_dict)
 
-# Change the dict if needed
-# python_dict['columns']['Class_att'] = {'sdtype': 'categorical'}
+#json_object = json.dumps(python_dict, indent=4)
 
-json_object = json.dumps(python_dict, indent=4)
-
-with open("../data/obesity/metadata.json", "w") as outfile:
-    outfile.write(json_object)
+# with open("../data/obesity/metadata.json", "w") as outfile:
+#    outfile.write(json_object)
