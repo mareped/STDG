@@ -1,0 +1,1 @@
+{"enforce_min_max_values": true, "enforce_rounding": false, "embedding_dim": 128, "generator_dim": [256, 256], "discriminator_dim": [256, 256], "generator_lr": 0.0002, "generator_decay": 1e-06, "discriminator_lr": 0.0002, "discriminator_decay": 1e-06, "batch_size": 200, "discriminator_steps": 1, "log_frequency": true, "verbose": true, "epochs": 300, "pac": 10, "cuda": true}

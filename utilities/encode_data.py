@@ -70,7 +70,27 @@ def encode_data_consistent(real_path, fake_path, categorical_columns, encoding_m
     return real_data_encoded, fake_data_encoded, encoding_map
 
 
-config = DataConfig(dataset_name='lower_back_pain', model_name='copulagan', epochs=800, batch_size=100)
+def decode_data(data_path, encoding_map_path):
+    with open(encoding_map_path, 'r') as f:
+        encoding_map = json.load(f)
+
+    df = pd.read_csv(data_path)
+
+    # Generate a dictionary for each encoded column with encoded values as keys and original values as values
+    decode_maps = {}
+    for column, encoding in encoding_map.items():
+        if column in df.columns:
+            decode_maps[column] = {v: k for k, v in encoding.items()}
+
+    # Replace encoded values in each column of the DataFrame
+    for column in df.columns:
+        if column in decode_maps:
+            df[column].replace(decode_maps[column], inplace=True)
+
+    return df
+
+
+"""config = DataConfig(dataset_name='lower_back_pain', model_name='copulagan', epochs=800, batch_size=100)
 real_path, fake_path, mixed_path = config.real_path, config.fake_path, config.mixed_path
 
 # Load the JSON-encoded encoding map if it exist
@@ -82,7 +102,8 @@ existing_encoding_map = json.loads(encoding_map_json)
 
 categorical_cols = ['Class_att']
 
-real_data_enc, fake_data_enc, encoding_map = encode_data_consistent(real_path, fake_path, categorical_cols, existing_encoding_map)
+real_data_enc, fake_data_enc, encoding_map = encode_data_consistent(real_path, fake_path, categorical_cols,
+                                                                    existing_encoding_map)
 # real_data_enc.to_csv(real_path + '_encoded.csv', index=False)
 fake_data_enc.to_csv(fake_path + '_encoded.csv', index=False)
 
@@ -93,6 +114,6 @@ mixed_data.to_csv(mixed_path + '_encoded.csv', index=False)
 print(encoding_map)
 """
 # Save encoding map as JSON file
-with open(real_path + '_encoding_map.json', 'w') as f:
-    encoding_map_json = {k: {str(kk): int(vv) for kk, vv in v.items()} for k, v in encoding_map.items()}
-    json.dump(encoding_map_json, f, indent=2)"""
+# with open(real_path + '_encoding_map.json', 'w') as f:
+#    encoding_map_json = {k: {str(kk): int(vv) for kk, vv in v.items()} for k, v in encoding_map.items()}
+#    json.dump(encoding_map_json, f, indent=2)"""

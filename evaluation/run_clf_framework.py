@@ -1,7 +1,7 @@
 from config import DataConfig
 from evaluation.clf_framework import ClassifierFramework
 
-config = DataConfig(dataset_name='lower_back_pain', model_name='copulagan', epochs=800, batch_size=100)
+config = DataConfig(dataset_name='cardio', model_name='ctgan', epochs=300, batch_size=400)
 
 real_path, fake_path, mixed_path, result_path = config.real_path, config.fake_path, config.mixed_path, config.result_path
 #real_path, fake_path, mixed_path, result_path = \
@@ -10,5 +10,5 @@ real_path, fake_path, mixed_path, result_path = config.real_path, config.fake_pa
 evaluator = ClassifierFramework()
 evaluator.print_t1t2_results(real_path, fake_path, mixed_path, result_path)
 
-classifier = evaluator.classifiers.get("Random Forest")
+#classifier = evaluator.classifiers.get("Random Forest")
 #evaluator.plot_confusion_matrix(classifier, real_path)
