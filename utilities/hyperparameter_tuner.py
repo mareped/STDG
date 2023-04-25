@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.model_selection import RepeatedStratifiedKFold, RandomizedSearchCV
 from sklearn.model_selection import GridSearchCV
@@ -22,6 +23,12 @@ def define_dict(classifier_type):
             'alpha': 10.0 ** -np.arange(3, 7),
             'hidden_layer_sizes': np.arange(10, 15),
             'max_iter': [1000, 1200, 1400, 1600, 1800, 2000]
+        },
+        random_forest: {
+            'n_estimators': [100, 150, 200],
+            'max_depth': [6, 9, 12],
+            'min_samples_split': [2, 5, 10],
+            'min_samples_leaf': [1, 2, 4],
         }
     }
 
@@ -74,13 +81,14 @@ def perform_grid_search(dataset_path, classifier_type):
 
 
 # create a new instance of DataConfig, with the dataset (lower_back_pain, obesity)
-config = DataConfig(dataset_name='lower_back_pain', model_name='ctgan', epochs=800, batch_size=100)
+config = DataConfig(dataset_name='cardio', model_name='copulagan', epochs=250, batch_size=400)
 
 real_path = config.real_path
 
 mlp_classifier = MLPClassifier()
 logreg = LogisticRegression()
+random_forest = RandomForestClassifier()
 
 # perform_randomized_search(real_path, mlp_classifier)
 
-perform_grid_search(real_path, logreg)
+perform_grid_search(real_path, random_forest)

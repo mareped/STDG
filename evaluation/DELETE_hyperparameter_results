@@ -1,3 +1,8 @@
-CTGAN - Lower Back Pain
+CTGAN - Lower Back Pain:
 
 Logistic regression = Best: 0.846237 using {'C': 100, 'penalty': 'l2', 'solver': 'newton-cg'}
+
+CopulaGAN Cardio:
+
+Random Forest = Best: 0.736157 using {'max_depth': 12, 'min_samples_leaf': 4, 'min_samples_split': 10, 'n_estimators': 150}
+

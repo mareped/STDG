@@ -1,5 +1,3 @@
-import matplotlib as plt
-import plotly.graph_objects as go
 import plotly.subplots as sp
 from sdv.evaluation.single_table import evaluate_quality
 from sdv.evaluation.single_table import run_diagnostic

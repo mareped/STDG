@@ -24,7 +24,7 @@ def column_correlation_plot(data_path, save_plot=False, save_path=None):
 
     plt.show()
 
-
+# CONFUSION MATRIX
 def plot_cmf(true_labels, predicted_labels, classes):
     cm = confusion_matrix(true_labels, predicted_labels, labels=classes)
     fig, ax = plt.subplots()
