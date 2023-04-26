@@ -80,9 +80,9 @@ def save_model_parameters(result_path, model):
         json.dump(parameters, fp)
 
 
-def main(meta_data_path, real_path, model_path, result_path, fake_path, model_type, dataset_name,
-         model_epochs, model_batch_size,
-         plot=False, save_parameters=False):
+def generate_data(meta_data_path, real_path, model_path, result_path, fake_path, model_type, dataset_name,
+                  model_epochs, model_batch_size,
+                  plot=False, save_parameters=False):
     metadata = SingleTableMetadata.load_from_json(meta_data_path)
     real_data = pd.read_csv(real_path)
 

@@ -81,7 +81,7 @@ def perform_grid_search(dataset_path, classifier_type):
 
 
 # create a new instance of DataConfig, with the dataset (lower_back_pain, obesity)
-config = DataConfig(dataset_name='cardio', model_name='copulagan', epochs=250, batch_size=400)
+config = DataConfig(dataset_name='lower_back_pain', model_name='ctgan', epochs=600, batch_size=100)
 
 real_path = config.real_path
 
@@ -91,4 +91,4 @@ random_forest = RandomForestClassifier()
 
 # perform_randomized_search(real_path, mlp_classifier)
 
-perform_grid_search(real_path, random_forest)
+perform_grid_search(real_path, mlp_classifier)

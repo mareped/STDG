@@ -2,6 +2,15 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 
+# Creates a mixed dataset of two dataframes
+def merge_datasets(df1, df2):
+    # Concatenate the two DataFrames
+    merged_df = pd.concat([df1, df2], ignore_index=True)
+    merged_df = merged_df.sample(frac=1).reset_index(drop=True)
+
+    return merged_df
+
+
 # Scale all the numeric values, except the categorical columns and the label
 def min_max_scale_df(df, categorical_columns, label):
     # Create a MinMaxScaler object
@@ -55,9 +64,6 @@ def one_hot_encode(df, categorical_columns, label):
     label_encode_one_col(df_copy, label)
 
     return df_copy
-
-
-
 
 
 # For obesity
