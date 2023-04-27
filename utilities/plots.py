@@ -6,11 +6,10 @@ import pandas as pd
 from matplotlib import cm
 
 
-
-def column_correlation_plot(data_path, save_plot=False, save_path=None):
-    data = pd.read_csv(data_path)
-    f, ax = plt.subplots(figsize=(13, 8))
+def column_correlation_plot(data, save_plot=False, save_path=None):
     corr = data.corr()
+
+    f, ax = plt.subplots(figsize=(13, 8))
     sns.heatmap(corr,
                 cmap=sns.diverging_palette(220, 10, as_cmap=True),
                 vmin=-1.0, vmax=1.0,
@@ -23,6 +22,9 @@ def column_correlation_plot(data_path, save_plot=False, save_path=None):
         plt.savefig(save_path)
 
     plt.show()
+
+
+
 
 # CONFUSION MATRIX
 def plot_cmf(true_labels, predicted_labels, classes):

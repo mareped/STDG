@@ -118,6 +118,7 @@ class ClassifierEvaluationFramework:
         :param result_path: Path to the directory for storing results
         :param test_size: Proportion of the dataset to include in the test split
         """
+
         if not self.classifiers:
             raise ValueError("Please provide at least one classifier")
 

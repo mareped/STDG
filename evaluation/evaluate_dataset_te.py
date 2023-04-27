@@ -56,6 +56,7 @@ class TableEvaluatorEvaluation:
             # Reset the standard output
             sys.stdout = original_stdout
 
-    def column_corr_plot(self, save=False):
+"""    def column_corr_plot(self, save=False):
         column_correlation_plot(self.synthetic_path, save_plot=save, save_path=f'{self.result_path}/corrmatrix.png')
 
+"""

@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 
-config = DataConfig(dataset_name='lower_back_pain', model_name='ctgan', epochs=600, batch_size=100)
+config = DataConfig(dataset_name='cardio', model_name='copulagan', epochs=250, batch_size=400)
 
 real_path, fake_path, mixed_path, result_path = config.real_path, config.fake_path, config.mixed_path, config.result_path
 
