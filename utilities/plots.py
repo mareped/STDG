@@ -96,7 +96,7 @@ def plot_binaryclass_roc(y_true_real, y_score_real, y_true_synth, y_score_synth,
     ax.set_xlabel('False Positive Rate')
     ax.set_ylabel('True Positive Rate')
     ax.set_title('ROC Curve for {}'.format(clf_name))
-    ax.legend()
+    ax.legend(loc="lower right")
 
 
 def plot_multiclass_roc(y_true_real, y_score_real, y_true_synth, y_score_synth, n_classes, clf_name,
