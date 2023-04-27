@@ -3,35 +3,77 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\data\lower_back_pain\lower_back_pain_num.csv">
+        <entry key="C:\Users\maria\AppData\Local\Temp\diabetes.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\data\lower_back_pain\lower_back_pain_scaled.csv">
+        <entry key="\data\lower_back_pain\copulagan_500_epochs_100_batch.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\data\obesity\copulagan_400_epochs_100_batch.csv">
+        <entry key="\data\lower_back_pain\copulagan_mix.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\data\obesity\obesity_num.csv">
+        <entry key="\data\lower_back_pain\ctgan_600_epochs_100_batch.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\data\obesity\obesity_scaled.csv">
+        <entry key="\evaluation\results\cardio\copulagan_250_epochs_400_batch\classifier_results.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\evaluation\results\lower_back_pain\copulagan_500_epochs_100_batch\classifier_results.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\evaluation\results\lower_back_pain\copulagan_500_epochs_100_batch\copulagan_loss.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\evaluation\results\lower_back_pain\copulagan_800_epochs_100_batch\classifier_results.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\evaluation\results\lower_back_pain\copulagan_800_epochs_100_batch\copulagan_loss.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\evaluation\results\lower_back_pain\ctgan_600_epochs_100_batch\classifier_results.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\evaluation\results\obesity\ctgan_300_epochs_50_batch\classifier_results.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

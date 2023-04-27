@@ -17,8 +17,8 @@ def class_distribution(data, plot_title, label_col):
     plt.show()
 
 
-path = "../data/cardio/cardio.csv"
+path = "../data/obesity/obesity.csv"
 # Load dataset from file
-dataset = pd.read_csv(path, delimiter=";")
+dataset = pd.read_csv(path)
 title = "Cardivacoular Disease"
-class_distribution(dataset, title, "cardio")
+class_distribution(dataset, title, "class")

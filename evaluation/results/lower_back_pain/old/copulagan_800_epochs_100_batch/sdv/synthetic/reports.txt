@@ -1,0 +1,59 @@
+QUALITY REPORT
+ Quality Score: 0.7949281466783067
+ Properties: 
+              Property     Score
+0       Column Shapes  0.722829
+1  Column Pair Trends  0.867028 Details:
+                       Column        Metric  Quality Score
+0           pelvic_incidence  KSComplement       0.754839
+1                pelvic_tilt  KSComplement       0.693548
+2      lumbar_lordosis_angle  KSComplement       0.754839
+3               sacral_slope  KSComplement       0.796774
+4              pelvic_radius  KSComplement       0.280645
+5   degree_spondylolisthesis  KSComplement       0.854839
+6               pelvic_slope  KSComplement       0.748387
+7                direct_tilt  KSComplement       0.790323
+8             thoracic_slope  KSComplement       0.832258
+9              cervical_tilt  KSComplement       0.787097
+10              sacrum_angle  KSComplement       0.758065
+11           scoliosis_slope  KSComplement       0.658065
+12                 Class_att  TVComplement       0.687097DIAGNOSTIC REPORT
+<sdmetrics.reports.single_table.diagnostic_report.DiagnosticReport object at 0x0000019327225340> 
+
+DIAGNOSTIC REPORT: Properties 
+{'Coverage': 0.9059320120772465, 'Synthesis': 1.0, 'Boundaries': 1.0} 
+
+DIAGNOSTIC REPORT: Synthesis
+            Metric  Diagnostic Score  Num Matched Rows  Num New Rows
+0  NewRowSynthesis               1.0                 0           310 
+
+DIAGNOSTIC REPORT: Coverage
+                      Column            Metric  Diagnostic Score
+0           pelvic_incidence     RangeCoverage          1.000000
+1                pelvic_tilt     RangeCoverage          1.000000
+2      lumbar_lordosis_angle     RangeCoverage          1.000000
+3               sacral_slope     RangeCoverage          0.772382
+4              pelvic_radius     RangeCoverage          0.447339
+5   degree_spondylolisthesis     RangeCoverage          0.564345
+6               pelvic_slope     RangeCoverage          0.997439
+7                direct_tilt     RangeCoverage          0.997873
+8             thoracic_slope     RangeCoverage          0.999947
+9              cervical_tilt     RangeCoverage          0.998742
+10              sacrum_angle     RangeCoverage          0.999415
+11           scoliosis_slope     RangeCoverage          0.999634
+12                 Class_att  CategoryCoverage          1.000000 
+
+DIAGNOSTIC REPORT: Boundaries
+                      Column             Metric  Diagnostic Score
+0           pelvic_incidence  BoundaryAdherence               1.0
+1                pelvic_tilt  BoundaryAdherence               1.0
+2      lumbar_lordosis_angle  BoundaryAdherence               1.0
+3               sacral_slope  BoundaryAdherence               1.0
+4              pelvic_radius  BoundaryAdherence               1.0
+5   degree_spondylolisthesis  BoundaryAdherence               1.0
+6               pelvic_slope  BoundaryAdherence               1.0
+7                direct_tilt  BoundaryAdherence               1.0
+8             thoracic_slope  BoundaryAdherence               1.0
+9              cervical_tilt  BoundaryAdherence               1.0
+10              sacrum_angle  BoundaryAdherence               1.0
+11           scoliosis_slope  BoundaryAdherence               1.0 

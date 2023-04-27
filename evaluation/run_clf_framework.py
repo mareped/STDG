@@ -1,14 +1,25 @@
 from config import DataConfig
-from evaluation.clf_framework import ClassifierFramework
+from evaluation.classifer_eval_framework import ClassifierEvaluationFramework
 
-config = DataConfig(dataset_name='lower_back_pain', model_name='copulagan', epochs=800, batch_size=100)
+from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+
+
+config = DataConfig(dataset_name='cardio', model_name='copulagan', epochs=250, batch_size=400)
 
 real_path, fake_path, mixed_path, result_path = config.real_path, config.fake_path, config.mixed_path, config.result_path
-#real_path, fake_path, mixed_path, result_path = \
-#   f'{config.real_path}_encoded.csv', f'{config.fake_path}_encoded.csv', f'{config.mixed_path}_encoded.csv', config.result_path
 
-evaluator = ClassifierFramework()
-evaluator.print_t1t2_results(real_path, fake_path, mixed_path, result_path)
+# declare which classifiers to use
+logreg = LogisticRegression()
+rf = RandomForestClassifier()
+mlp = MLPClassifier()
+#dt = DecisionTreeClassifier()
 
-classifier = evaluator.classifiers.get("Random Forest")
-#evaluator.plot_confusion_matrix(classifier, real_path)
+evaluator = ClassifierEvaluationFramework()
+
+evaluator.add_all_classifiers(logreg, rf, mlp)
+
+evaluator.t1t2_results(real_path, fake_path, mixed_path, result_path, test_size=0.2)
+

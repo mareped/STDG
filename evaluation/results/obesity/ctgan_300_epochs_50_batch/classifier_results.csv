@@ -1,10 +1,10 @@
 classifier,train_data,f1_real,f1_synth
-Random Forest,real,0.9896170013105005,0.6544537537986732
-Random Forest,synth,0.38464797986190613,0.8352800323695225
-Random Forest,mixed,0.9872973344830014,0.918822721140417
-Logistic Regression,real,0.9346330263899151,0.610104578241241
-Logistic Regression,synth,0.404296763364425,0.4175584995634808
-Logistic Regression,mixed,0.6428052786945302,0.5239720089830497
-MLP Classifier,real,0.9381311036868386,0.6230252155844098
-MLP Classifier,synth,0.4305735178912438,0.45631272055763067
-MLP Classifier,mixed,0.7885394528421701,0.6334842734651128
+LogisticRegression,real,0.71655,0.36154
+LogisticRegression,synth,0.42863,0.37675
+LogisticRegression,mixed,0.61336,0.50405
+RandomForestClassifier,real,0.95116,0.34045
+RandomForestClassifier,synth,0.3685,0.44296
+RandomForestClassifier,mixed,0.98355,0.68358
+MLPClassifier,real,0.86001,0.33858
+MLPClassifier,synth,0.4206,0.39456
+MLPClassifier,mixed,0.81354,0.54724
