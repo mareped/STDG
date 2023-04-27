@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -5,7 +7,7 @@ import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 
 
-class BasicStatFramework:
+class BasicStatEvaluation:
 
     def __init__(self, real_path, synthetic_path, result_path):
         self.real_data = pd.read_csv(real_path)
@@ -13,6 +15,11 @@ class BasicStatFramework:
         self.real_corr = self.real_data.corr()
         self.synthetic_corr = self.synthetic_data.corr()
         self.result_path = result_path + "/basic_stats"
+
+        # Create the directory if it doesn't exist
+        if not os.path.exists(self.result_path):
+            os.makedirs(self.result_path)
+
 
     def column_corr_plot(self, save=False):
         f, ax = plt.subplots(figsize=(13, 8))
@@ -37,14 +44,9 @@ class BasicStatFramework:
 
         correlation_matrix_difference = self.real_corr - self.synthetic_corr
 
-        cmap = LinearSegmentedColormap.from_list(
-            "custom_red_blue",
-            [(1.0, 0.0, 0.0), (0.5, 0.0, 0.5), (0.0, 0.0, 1.0)],
-            N=256
-        )
         f, ax = plt.subplots(figsize=(13, 8))
         sns.heatmap(correlation_matrix_difference,
-                    cmap=cmap,
+                    cmap=sns.diverging_palette(220, 10, as_cmap=True),
                     vmin=-1.0, vmax=1.0,
                     square=True, ax=ax)
         plt.title("Correlation Matrix Real - Synthetic")
@@ -54,7 +56,7 @@ class BasicStatFramework:
 
         plt.show()
 
-    def corr_scatter_plot(self):
+    def corr_scatter_plot(self, save=False):
         """
         If the correlations between variables are similar across the two datasets,
         the points will be close to the 45-degree line, while points far from the line represent variables with different
@@ -76,4 +78,8 @@ class BasicStatFramework:
         ax.plot([-1, 1], [-1, 1], 'k--', linewidth=1)
 
         plt.title("Scatter Plot of Correlation Coefficients")
+
+        if save:
+            plt.savefig(f'{self.result_path}/corr_coeff_scatter.png')
+
         plt.show()

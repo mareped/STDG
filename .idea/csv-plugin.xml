@@ -73,6 +73,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\evaluation\results\lower_back_pain\ctgan_600_epochs_100_batch\classifier_results_cross_val.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\evaluation\results\obesity\ctgan_300_epochs_50_batch\classifier_results.csv">
           <value>
             <Attribute>
