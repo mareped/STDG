@@ -16,7 +16,7 @@ evaluations using various combinations of datasets. The results, including F1 sc
 are visualized and saved for easy comparison and analysis.
 """
 
-
+#TODO: change the init to take paths as parameters
 class ClassifierEvaluationFrameworkCrossVal:
 
     def __init__(self):

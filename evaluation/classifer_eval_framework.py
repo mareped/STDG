@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,10 +21,18 @@ are visualized and saved for easy comparison and analysis.
 
 class ClassifierEvaluationFramework:
 
-    def __init__(self):
+    def __init__(self, real_path, synth_path, mixed_path, result_path):
+        self.real_path = real_path
+        self.synth_path = synth_path
+        self.mixed_path = mixed_path
+        self.result_path = result_path + "/classifier_evaluation"
         self.classes = None
         self.scaler = MinMaxScaler()
         self.classifiers = []
+
+        # Create the directory if it doesn't exist
+        if not os.path.exists(self.result_path):
+            os.makedirs(self.result_path)
 
     def add_classifier(self, clf):
         """
@@ -108,13 +118,13 @@ class ClassifierEvaluationFramework:
 
         return round(f1, 5), y_true, y_pred_probs
 
-    def t1t2_results(self, real_data, synth_data, mixed_data, result_path, test_size=0.2):
+    def t1t2_results(self, test_size=0.2):
         """
         Evaluate classifiers using the train_on_1_test_on_2() function with all combinations of datasets and classifiers.
 
-        :param real_data: Path to the real dataset file
-        :param synth_data: Path to the synthetic dataset file
-        :param mixed_data: Path to the mixed dataset file
+        :param real_path: Path to the real dataset file
+        :param synth_path: Path to the synthetic dataset file
+        :param mixed_path: Path to the mixed dataset file
         :param result_path: Path to the directory for storing results
         :param test_size: Proportion of the dataset to include in the test split
         """
@@ -134,9 +144,9 @@ class ClassifierEvaluationFramework:
             for idx, (clf_name, clf) in enumerate(classifier_group):
 
                 data_dict = {
-                    "real": (real_data, real_data, synth_data),
-                    "synth": (synth_data, real_data, synth_data),
-                    "mixed": (mixed_data, real_data, mixed_data)
+                    "real": (self.real_path, self.real_path, self.synth_path),
+                    "synth": (self.synth_path, self.real_path, self.synth_path),
+                    "mixed": (self.mixed_path, self.real_path, self.mixed_path)
                 }
 
                 for jdx, (data_name, (train_data, test_data1, test_data2)) in enumerate(data_dict.items()):
@@ -168,8 +178,8 @@ class ClassifierEvaluationFramework:
                                             ax=ax, plot_class_curves=False)
 
             plt.tight_layout()
-            plt.savefig(f'{result_path}/roc_curves_{group_idx + 1}.png')
+            plt.savefig(f'{self.result_path}/roc_curves_{group_idx + 1}.png')
             plt.show()
 
         df = pd.DataFrame(results)
-        df.to_csv(f'{result_path}/classifier_results.csv', index=False)
+        df.to_csv(f'{self.result_path}/classifier_f1_scores.csv', index=False)

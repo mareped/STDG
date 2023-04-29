@@ -73,7 +73,7 @@ class SDVEvaluation:
 
         print(boundary)
 
-    def plot_one_column_boundary(self, column_name):
+    def plot_one_column_range(self, column_name):
         fig = utils.get_column_plot(
             real_data=self.real_data,
             synthetic_data=self.synthetic_data,
@@ -84,9 +84,13 @@ class SDVEvaluation:
         fig.update_layout(title=column_name)
         fig.show()
 
-    def plot_all_columns_boundaries(self, columns):
+    def plot_all_columns_ranges(self, columns):
         n_cols = len(columns)
         n_rows = (n_cols - 1) // 2 + 1  # 2 columns per row
+
+        # Set the subplot size based on the number of columns being plotted
+        subplot_width = 600 // min(n_cols, 2)
+        subplot_height = 400 // n_rows
 
         # create subplot layout
         fig = sp.make_subplots(rows=n_rows, cols=2, subplot_titles=columns)
@@ -102,7 +106,8 @@ class SDVEvaluation:
             for trace in plotly_fig.data:
                 fig.add_trace(trace, row=row, col=col)
 
-        fig.update_layout(height=800, width=800, showlegend=False)
+        fig.update_layout(height=subplot_height * n_rows, width=subplot_width * 3.5, showlegend=False)
+        fig.show()
         fig.write_image(self.result_path + "all_boundaries_plot.png")
 
 
