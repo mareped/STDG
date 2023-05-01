@@ -13,7 +13,7 @@ from sklearn.preprocessing import label_binarize, MinMaxScaler
 """
 This framework provides an evaluation platform for comparing the 
 performance of different classifiers on real, synthetic, and mixed datasets. 
-It enables users to add classifiers, preprocess data, and conduct train-test 
+It enables users to add classifiers, preprocess data, and conduct train-test or cross validation
 evaluations using various combinations of datasets. The results, including F1 scores and ROC curves, 
 are visualized and saved for easy comparison and analysis.
 """
@@ -117,12 +117,8 @@ class ClassifierEvaluationFramework:
 
         x = self.scaler.fit_transform(x)
 
-        x_test, y_test = self.read_data(dataset2)
-        x_test = self.scaler.transform(x_test)
-
-        # Split dataset2 into training and validation sets
-        x_val, x_train2, y_val, y_train2 = train_test_split(x_test, y_test, test_size=0.2, stratify=y_test,
-                                                            random_state=42)
+        x_val, y_val = self.read_data(dataset2)
+        x_val = self.scaler.transform(x_val)
 
         cv = StratifiedKFold(n_splits=n_folds)
 
@@ -203,7 +199,7 @@ class ClassifierEvaluationFramework:
                         'train_data': data_name,
                         'f1_real': f1,
                         'f1_synth': f1_2,
-                        'delta': abs(f1-f1_2)
+                        'delta': abs(f1 - f1_2)
                     })
 
                     n_classes = len(self.classes)
@@ -223,4 +219,5 @@ class ClassifierEvaluationFramework:
             plt.show()
 
         df = pd.DataFrame(results)
+        print(df)
         df.to_csv(f'{self.result_path}/classifier_f1_scores.csv', index=False)
