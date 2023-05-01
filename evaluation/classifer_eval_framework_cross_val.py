@@ -16,7 +16,7 @@ evaluations using various combinations of datasets. The results, including F1 sc
 are visualized and saved for easy comparison and analysis.
 """
 
-
+#TODO: change the init to take paths as parameters
 class ClassifierEvaluationFrameworkCrossVal:
 
     def __init__(self):
@@ -56,21 +56,6 @@ class ClassifierEvaluationFrameworkCrossVal:
         y = dataset.iloc[:, -1].values
 
         return x, y
-
-    def split_data(self, dataset_path):
-        """
-        Read and split the dataset into training and testing sets.
-
-        :param dataset_path: Path to the dataset file
-        :return: Training and testing sets as NumPy arrays
-        """
-
-        x, y = self.read_data(dataset_path)
-        self.classes = np.unique(y)
-
-        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=16)
-
-        return X_train, X_test, y_train, y_test
 
     def train_on_1_test_on_2(self, clf, dataset1, dataset2, n_splits=5):
         """

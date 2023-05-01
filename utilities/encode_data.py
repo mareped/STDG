@@ -2,9 +2,6 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 import json
 
-from utilities.pre_processing import merge_datasets
-
-
 # print the type of columns in a dataframe
 def print_column_types(df):
     for col in df.columns:

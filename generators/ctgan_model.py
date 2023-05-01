@@ -1,6 +1,3 @@
-###################################################
-###################### CTGAN ######################
-###################################################
 import pandas as pd
 import sys
 from io import StringIO
@@ -12,7 +9,9 @@ import plotly.graph_objects as go
 from sdv.metadata import SingleTableMetadata
 from sdv.single_table import CTGANSynthesizer
 from config import DataConfig
-
+"""
+Simple script generating data from CTGAN 
+"""
 # create a new instance of DataConfig, with the dataset (lower_back_pain, obesity)
 config = DataConfig(dataset_name='lower_back_pain', model_name='ctgan', epochs=800, batch_size=20)
 

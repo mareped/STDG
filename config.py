@@ -2,6 +2,8 @@
 This class defines configuration for generating synthetic data using GAN models on the available datasets
 The allowed values for datasets and models are listed in the class constants.
 The configuration includes the number of epochs, batch size, file name, and file paths for the real, synthetic, and mixed data
+
+Use this file to define where to read and write the data used for easier configuration.
 """
 
 
@@ -22,10 +24,9 @@ class DataConfig:
         self.epochs = epochs
         self.batch_size = batch_size
         self.file_ending = f'{model_name}_{epochs}_epochs_{batch_size}_batch'
-        # TODO: remember to add csv to end of real,fake and mixed path
         self.real_path = f'../data/{dataset_name}/{dataset_name}' + '.csv'
         self.fake_path = f'../data/{dataset_name}/' + self.file_ending  + '.csv'
         self.mixed_path = f'../data/{dataset_name}/{model_name}_mix' + '.csv'
-        self.result_path = f'../evaluation/results/{dataset_name}/' + self.file_ending
+        self.result_path = f'..//results/{dataset_name}/' + self.file_ending
         self.meta_data = f'../data/{dataset_name}/metadata.json'
         self.model_path = f'../saved_models/{dataset_name}/' + self.file_ending + '.pkl'

@@ -1,6 +1,3 @@
-###################################################
-#################### CopulaGAN ####################
-###################################################
 import pandas as pd
 import json
 import sys
@@ -13,6 +10,9 @@ from sdv.metadata import SingleTableMetadata
 from sdv.single_table import CopulaGANSynthesizer
 
 from config import DataConfig
+"""
+Simple script generating data from CopulaGAN
+"""
 
 # create a new instance of DataConfig, with the dataset (lower_back_pain, obesity)
 config = DataConfig(dataset_name='lower_back_pain', model_name='ctgan', epochs=800, batch_size=20)
@@ -21,21 +21,6 @@ real_path, fake_path, result_path, meta_data_path, model_path = \
     config.real_path, config.fake_path, config.result_path, config.meta_data, config.model_path
 dataset_name, model_name = config.dataset_name, config.model_name
 epochs, batch_size = config.epochs, config.batch_size
-
-"""DATASET_NAME = 'obesity'
-MODEL_NAME = 'copulagan'
-
-# Hyperparameters
-EPOCHS = 400
-BATCH_SIZE = 100
-
-DATA_FILENAME = f'../data/{DATASET_NAME}/{DATASET_NAME}_scaled.csv'
-METADATA_FILENAME = f"../data/{DATASET_NAME}/metadata.json"
-
-file_ending = f'{DATASET_NAME}/{MODEL_NAME}_{EPOCHS}_epochs_{BATCH_SIZE}_batch'
-
-RESULT_PATH = f'../evaluation/results/' + file_ending"""
-
 
 # Load the metadata
 metadata = SingleTableMetadata.load_from_json(meta_data_path)

@@ -1,5 +1,6 @@
 from config import DataConfig
 from generators.copulagan_ctgan_models import generate_data
+
 # Script that generates synthetic data based on model, dataset, epochs and batch size
 
 # New instance of DataConfig, with dataset (lower_back_pain, obesity), model_name(ctgan, copulagan), epochs, batch size
