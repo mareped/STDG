@@ -2,8 +2,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 from sklearn.metrics import auc, roc_curve, confusion_matrix
-import pandas as pd
-from matplotlib import cm
 
 
 def column_correlation_plot(data, save_plot=False, save_path=None):
@@ -24,6 +22,19 @@ def column_correlation_plot(data, save_plot=False, save_path=None):
     plt.show()
 
 
+def class_distribution_plot(data, plot_title, label_col):
+    # Rename the class column
+    data.rename(columns={label_col: "class"}, inplace=True)
+    # Check for missing values
+    print(data.isna().sum())
+    # Calculate class distribution
+    class_counts = data["class"].value_counts().sort_index()
+    # Plot class distribution
+    plt.bar(class_counts.index, class_counts.values)
+    plt.xlabel("Class")
+    plt.ylabel("Count")
+    plt.title(plot_title)
+    plt.show()
 
 
 # CONFUSION MATRIX

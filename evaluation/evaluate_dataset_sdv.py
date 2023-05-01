@@ -1,6 +1,7 @@
 import plotly.subplots as sp
 from sdv.evaluation.single_table import evaluate_quality
 from sdv.evaluation.single_table import run_diagnostic
+from sdmetrics.single_table import NewRowSynthesis
 from sdmetrics.single_column import BoundaryAdherence
 import pandas as pd
 from sdv.metadata import SingleTableMetadata
@@ -53,7 +54,6 @@ class SDVEvaluation:
                         f'\nDIAGNOSTIC REPORT: Synthesis\n{synthesis} \n' \
                         f'\nDIAGNOSTIC REPORT: Coverage\n{coverage} \n' \
                         f'\nDIAGNOSTIC REPORT: Boundaries\n{boundaries} \n'
-
         return report_string
 
     def write_reports_to_file(self):
@@ -110,5 +110,12 @@ class SDVEvaluation:
         fig.show()
         fig.write_image(self.result_path + "all_boundaries_plot.png")
 
+    def row_synhesis(self):
+        new_row_synthesis = NewRowSynthesis.compute_breakdown(
+            real_data=self.real_data,
+            synthetic_data=self.synthetic_data,
+            metadata=self.metadata.to_dict(),
+            numerical_match_tolerance=0.0)
 
+        return new_row_synthesis
 

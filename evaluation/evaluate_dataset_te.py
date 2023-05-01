@@ -51,6 +51,15 @@ class TableEvaluatorEvaluation:
 
         table_evaluator.visual_evaluation(save_dir=save_dir)
 
+    def get_copies(self):
+        cat_cols, target = self.get_cat_columns_from_datasets()
+
+        r_data, f_data = load_data(self.real_path, self.synthetic_path)
+
+        table_evaluator = TableEvaluator(r_data, f_data, cat_cols=cat_cols)
+
+        return table_evaluator.get_copies()
+
     def get_results_report(self, cat_cols=None, target_col=None):
 
         """if the user decides to want to try the function with another dataset,

@@ -5,11 +5,10 @@ from evaluation.evaluate_dataset_sdv import SDVEvaluation
 from evaluation.evaluate_dataset_te import TableEvaluatorEvaluation
 from evaluation.basic_stat_framework import BasicStatEvaluation
 
-config = DataConfig(dataset_name='cardio', model_name='ctgan', epochs=300, batch_size=400)
+config = DataConfig(dataset_name='cardio', model_name='copulagan', epochs=250, batch_size=400)
 
 real_path, fake_path, meta_data_path, result_path, data_name, mixed_path = \
     config.real_path, config.fake_path, config.meta_data, config.result_path, config.dataset_name, config.mixed_path
-
 
 def run_sdv():
     # for fake
@@ -44,3 +43,5 @@ def run_bs():
 # run_te()
 
 
+sdv_evaluation = SDVEvaluation(real_path, fake_path, meta_data_path, result_path)
+print(sdv_evaluation.row_synhesis())

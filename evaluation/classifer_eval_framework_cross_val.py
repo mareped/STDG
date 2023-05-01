@@ -57,21 +57,6 @@ class ClassifierEvaluationFrameworkCrossVal:
 
         return x, y
 
-    def split_data(self, dataset_path):
-        """
-        Read and split the dataset into training and testing sets.
-
-        :param dataset_path: Path to the dataset file
-        :return: Training and testing sets as NumPy arrays
-        """
-
-        x, y = self.read_data(dataset_path)
-        self.classes = np.unique(y)
-
-        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=16)
-
-        return X_train, X_test, y_train, y_test
-
     def train_on_1_test_on_2(self, clf, dataset1, dataset2, n_splits=5):
         """
         Train the classifier on one dataset using cross-validation and test on another dataset.
