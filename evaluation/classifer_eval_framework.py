@@ -67,17 +67,17 @@ class ClassifierEvaluationFramework:
 
         return x, y
 
-    def train_on_1_test_on_2(self, clf, dataset1, dataset2, test_size=0.25):
+    def train_on_1_test_on_2(self, clf, train_data, test_data, test_size=0.25):
         """
         Train the classifier on one dataset and test on another, using train test split.
 
         :param clf: Classifier object
-        :param dataset1: Path to the first dataset file (for training)
-        :param dataset2: Path to the second dataset file (for testing)
+        :param train_data: Path to the first dataset file (for training)
+        :param test_data: Path to the second dataset file (for testing)
         :param test_size: Proportion of the dataset to include in the test split
         :return: F1 score, true labels, and predicted probabilities
         """
-        x, y = self.read_data(dataset1)
+        x, y = self.read_data(train_data)
         self.classes = np.unique(y)
 
         X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=16)
@@ -86,7 +86,7 @@ class ClassifierEvaluationFramework:
         X_train = self.scaler.fit_transform(X_train)
 
         clf.fit(X_train, y_train)
-        x_val, y_val = self.read_data(dataset2)
+        x_val, y_val = self.read_data(test_data)
 
         x_val = self.scaler.transform(x_val)
         x_val_train, x_val_test, y_val_train, y_val_test = train_test_split(x_val, y_val, test_size=test_size,
@@ -125,7 +125,7 @@ class ClassifierEvaluationFramework:
         cv_scores = []
         y_pred_probs = []
 
-        for train_idx, _ in cv.split(x, y):
+        for train_idx, test_idx in cv.split(x, y):
             x_train, y_train = x[train_idx], y[train_idx]
 
             clf.fit(x_train, y_train)
@@ -191,15 +191,24 @@ class ClassifierEvaluationFramework:
 
                     print(f"Training classifier {clf_name} on {data_name} data")
 
-                    f1, y_true, y_score, f1_2, y_true_2, y_score_2 = \
-                        self.evaluate_classifier(cross_val, clf, train_data, test_data1, test_data2)
+                    if cross_val:
+                        # This trains on one dataset and test on test_data1
+                        f1, y_true, y_score = self.train_on_1_test_on_2_cross_val(clf, train_data, test_data1)
+                        # This trains on same dataset and test on test_data2
+                        f1_2, y_true_2, y_score_2 = self.train_on_1_test_on_2_cross_val(clf, train_data, test_data2)
+                    else:
+                        f1, y_true, y_score = self.train_on_1_test_on_2(clf, train_data, test_data1)
+                        f1_2, y_true_2, y_score_2 = self.train_on_1_test_on_2(clf, train_data, test_data2)
 
+                    # f1, y_true, y_score, f1_2, y_true_2, y_score_2 = self.evaluate_classifier(cross_val, clf, train_data, test_data1, test_data2)
+
+                    delta = round(abs(f1 - f1_2), 4)
                     results.append({
                         'classifier': clf_name,
                         'train_data': data_name,
                         'f1_real': f1,
                         'f1_synth': f1_2,
-                        'delta': abs(f1 - f1_2)
+                        'delta': delta
                     })
 
                     n_classes = len(self.classes)
@@ -215,9 +224,8 @@ class ClassifierEvaluationFramework:
                                             ax=ax, plot_class_curves=False)
 
             plt.tight_layout()
-            plt.savefig(f'{self.result_path}/roc_curves_{group_idx + 1}.png')
+            plt.savefig(f'{self.result_path}/roc_curves_x_val{group_idx + 1}.png')
             plt.show()
 
         df = pd.DataFrame(results)
-        print(df)
-        df.to_csv(f'{self.result_path}/classifier_f1_scores.csv', index=False)
+        df.to_csv(f'{self.result_path}/classifier_f1_scores_x_val.csv', index=False)
