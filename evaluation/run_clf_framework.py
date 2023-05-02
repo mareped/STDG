@@ -20,5 +20,5 @@ evaluator = ClassifierEvaluationFramework(real_path, fake_path, mixed_path, resu
 
 evaluator.add_all_classifiers(logreg, rf, mlp)
 
-evaluator.t1t2_results(cross_val=False)
+evaluator.t1t2_results(cross_val=True)
 

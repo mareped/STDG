@@ -69,44 +69,6 @@ class ClassifierEvaluationFramework:
 
         return x, y
 
-    def delete(self, clf, train_data, test_data, test_size=0.25):
-
-        x, y = self.read_data(train_data)
-        self.classes = np.unique(y)
-
-        X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=16)
-
-        X_train = self.scaler.fit_transform(X_train)
-        X_test = self.scaler.transform(X_test)  # Apply scaling to X_test
-
-        clf.fit(X_train, y_train)
-
-        # predict on the dataset it is trained on
-        y_pred = clf.predict(X_test)
-
-        y_pred_probs = clf.predict_proba(X_test)  # Predicted probabilities of all classes
-        f1 = round(f1_score(y_test, y_pred, average='weighted'), 4)
-
-        # Binarize the true labels, in case it is a multiclass problem
-        y_true = label_binarize(y_test, classes=self.classes)
-
-        # test data
-        x_val, y_val = self.read_data(test_data)
-
-        x_val = self.scaler.transform(x_val)  # Apply scaling to x_val
-
-        y_pred_2 = clf.predict(x_val)
-
-        y_pred_probs_2 = clf.predict_proba(x_val)  # Predicted probabilities of all classes
-        f1_2 = round(f1_score(y_val, y_pred_2, average='weighted'), 4)
-
-        # Binarize the true labels, in case it is a multiclass problem
-        y_true_2 = label_binarize(y_val, classes=self.classes)
-
-        # f1, y_true and y_pred_probs are results from testing on the train dataset
-        # f1_2, y_true_2 and y_pred_probs_2 are from testing on the test data
-        return f1, f1_2, y_true, y_true_2, y_pred_probs, y_pred_probs_2
-
     def evaluate_classifier(self, clf, X_test, y_test):
         # predict
         y_pred = clf.predict(X_test)
@@ -115,10 +77,7 @@ class ClassifierEvaluationFramework:
         y_pred_probs = clf.predict_proba(X_test)
         f1 = round(f1_score(y_test, y_pred, average='weighted'), 4)
 
-        # Binarize the true labels, in case it is a multiclass problem
-        y_true = label_binarize(y_test, classes=self.classes)
-
-        return f1, y_true, y_pred, y_pred_probs
+        return f1, y_pred, y_pred_probs
 
     def train_test(self, clf, train_data, test_data, test_size=0.25):
         x_train_raw, y_train_raw = self.read_data(train_data)
@@ -137,110 +96,61 @@ class ClassifierEvaluationFramework:
         clf.fit(X_train, y_train)
 
         # results from testing on the same data as the train set
-        f1, y_true, y_pred, y_pred_probs = self.evaluate_classifier(clf, X_test, y_test)
+        f1, y_pred, y_pred_probs = self.evaluate_classifier(clf, X_test, y_test)
 
         # results from testing on the test data
-        f1_2, y_true_2, y_pred_2, y_pred_probs_2 = self.evaluate_classifier(clf, X_test_2, y_test_2)
+        f1_2, y_pred_2, y_pred_probs_2 = self.evaluate_classifier(clf, X_test_2, y_test_2)
 
-        return f1, f1_2, y_true, y_true_2, y_pred_probs, y_pred_probs_2
+        return f1, f1_2, y_test, y_test_2, y_pred_probs, y_pred_probs_2
 
     def train_test_cross_val(self, clf, train_data, test_data, n_folds=5):
-        """
-        Train the classifier on one dataset using cross-validation and test on both train and test datasets.
+        x_raw, y_raw = self.read_data(train_data)
+        X = self.scaler.fit_transform(x_raw)
+        self.classes = np.unique(y_raw)  # Set self.classes to the unique class labels
 
-        :param clf: Classifier object
-        :param train_data: Path to the dataset file for training
-        :param test_data: Path to the dataset file for testing
-        :param n_folds: Number of cross-validation folds
-        :return: Average F1 score across folds, true labels, and predicted probabilities for train and test datasets
-        """
+        # test data
+        X_test_2, y_test_2 = self.read_data(test_data)
+        X_test_2 = self.scaler.transform(X_test_2)
 
-        x_train_raw, y_train_raw = self.read_data(train_data)
-        x_test_raw, y_test_raw = self.read_data(test_data)
-        self.classes = np.unique(y_train_raw)
+        kf = StratifiedKFold(n_splits=n_folds)
 
-        x_train_raw = self.scaler.fit_transform(x_train_raw)
-        x_test_raw = self.scaler.transform(x_test_raw)
+        y_preds_all = []
+        y_pred_probs_all = []
+        y_pred_probs_all_2 = []
 
-        cv = StratifiedKFold(n_splits=n_folds)
+        for train_index, test_index in kf.split(X, y_raw):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y_raw[train_index], y_raw[test_index]
 
-        cv_scores_train = []
-        y_pred_probs_train = []
-        y_true_train = []
-
-        cv_scores_test = []
-        y_pred_probs_test = []
-        y_true_test = []
-
-        for train_idx, test_idx in cv.split(x_train_raw, y_train_raw):
-            x_train, y_train = x_train_raw[train_idx], y_train_raw[train_idx]
-            x_test, y_test = x_train_raw[test_idx], y_train_raw[test_idx]
-
-            clf.fit(x_train, y_train)
-
-            # predict and get F1 score for train dataset
-            y_pred_train = clf.predict(x_train)
-            f1_train = f1_score(y_train, y_pred_train, average='weighted')
-            cv_scores_train.append(f1_train)
-
-            y_pred_prob_train = clf.predict_proba(x_train)
-            y_pred_probs_train.append(y_pred_prob_train)
-
-            y_true_train_fold = label_binarize(y_train, classes=self.classes)
-            y_true_train.append(y_true_train_fold)
-
-            # predict and get F1 score for test dataset
-            y_pred_test = clf.predict(x_test_raw)
-            f1_test = f1_score(y_test_raw, y_pred_test, average='weighted')
-            cv_scores_test.append(f1_test)
-
-            y_pred_prob_test = clf.predict_proba(x_test_raw)
-            y_pred_probs_test.append(y_pred_prob_test)
-
-            y_true_test_fold = label_binarize(y_test_raw, classes=self.classes)
-            y_true_test.append(y_true_test_fold)
-
-        # Average the predicted probabilities for train and test datasets from each fold
-        y_pred_probs_train = np.mean(y_pred_probs_train, axis=0)
-        y_pred_probs_test = np.mean(y_pred_probs_test, axis=0)
-
-        y_true_train = np.concatenate(y_true_train)
-        y_true_test = np.concatenate(y_true_test)
-
-        return np.round(np.mean(cv_scores_train), 5), np.round(np.mean(cv_scores_test), 5), \
-               y_true_train, y_true_test, y_pred_probs_train, y_pred_probs_test
-
-    def train_test_cross_val_2(self, clf, train_data, test_data, n_folds=5):
-        x_train_raw, y_train_raw = self.read_data(train_data)
-        self.classes = np.unique(y_train_raw)
-
-        x_train_raw = self.scaler.fit_transform(x_train_raw)
-
-        cv = StratifiedKFold(n_splits=n_folds)
-
-        cv_scores = []
-        y_pred_probs = []
-
-        for train_idx, test_idx in cv.split(x_train_raw, y_train_raw):
-            x_train, y_train = x_train_raw[train_idx], y_train_raw[train_idx]
-            X_test, y_test = x_train_raw[test_idx], y_train_raw[test_idx]
-
-            clf.fit(x_train, y_train)
+            clf.fit(X_train, y_train)
 
             y_pred = clf.predict(X_test)
-            f1_2 = f1_score(y_test, y_pred, average='weighted')
-            cv_scores.append(f1_2)
 
-            y_pred_prob = clf.predict_proba(X_test)
-            y_pred_probs.append(y_pred_prob)
+            y_pred_probs = clf.predict_proba(X_test)
+            y_pred_probs_2 = clf.predict_proba(X_test_2)
 
-        # Average the predicted probabilities for dataset2 from each fold
-        y_pred_probs = np.mean(y_pred_probs, axis=0)
+            y_preds_all.append(dict(zip(test_index, y_pred)))
+            y_pred_probs_all.append(dict(zip(test_index, y_pred_probs)))
+            y_pred_probs_all_2.append(y_pred_probs_2)
 
-        # Binarize the true labels for dataset2
-        y_true = label_binarize(y_train_raw, classes=self.classes)
+        # Combine the predictions and probabilities from all folds
+        y_preds_combined = {index: pred for fold_preds in y_preds_all for index, pred in fold_preds.items()}
+        y_pred_probs_combined = {index: probs for fold_probs in y_pred_probs_all for index, probs in fold_probs.items()}
 
-        return np.round(np.mean(cv_scores), 5), y_true, y_pred_probs
+        # Sort the predictions and probabilities by index to match the original order of the samples
+        y_true = np.array(y_raw)
+        y_pred = np.array([y_preds_combined[i] for i in sorted(y_preds_combined)])
+        y_pred_probs = np.array([y_pred_probs_combined[i] for i in sorted(y_pred_probs_combined)])
+
+        # Average the probabilities for dataset2 and compute the predictions from the averaged probabilities
+        y_pred_probs_2_avg = np.mean(y_pred_probs_all_2, axis=0)
+        y_preds_2_avg = np.argmax(y_pred_probs_2_avg, axis=1)
+
+        f1 = f1_score(y_true, y_pred, average='weighted')
+        f1_2 = f1_score(y_test_2, y_preds_2_avg, average='weighted')
+
+        return f1, f1_2, y_true, y_test_2, y_pred_probs, y_pred_probs_2_avg
+
 
     def t1t2_results(self, cross_val=False):
         """
