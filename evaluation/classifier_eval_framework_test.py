@@ -8,7 +8,7 @@ from utilities.plots import plot_multiclass_roc, plot_binaryclass_roc
 
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.metrics import f1_score
-from sklearn.preprocessing import label_binarize, MinMaxScaler, LabelBinarizer
+from sklearn.preprocessing import MinMaxScaler
 
 import warnings
 
@@ -19,7 +19,6 @@ It enables users to add classifiers, preprocess data, and conduct train-test or 
 evaluations using various combinations of datasets. The results, including F1 scores and ROC curves, 
 are visualized and saved for easy comparison and analysis.
 """
-
 
 class ClassifierEvaluationFramework:
 
@@ -69,16 +68,6 @@ class ClassifierEvaluationFramework:
 
         return x, y
 
-    def evaluate_classifier(self, clf, X_test, y_test):
-        # predict
-        y_pred = clf.predict(X_test)
-
-        # Predicted probabilities of all classes
-        y_pred_probs = clf.predict_proba(X_test)
-        f1 = round(f1_score(y_test, y_pred, average='weighted'), 4)
-
-        return f1, y_pred, y_pred_probs
-
     def train_test(self, clf, train_data, test_data, test_size=0.25):
         x_train_raw, y_train_raw = self.read_data(train_data)
         self.classes = np.unique(y_train_raw)
@@ -95,20 +84,36 @@ class ClassifierEvaluationFramework:
 
         clf.fit(X_train, y_train)
 
-        # results from testing on the same data as the train set
-        f1, y_pred, y_pred_probs = self.evaluate_classifier(clf, X_test, y_test)
+        # test on the train_data
+        y_pred = clf.predict(X_test)
+        f1 = round(f1_score(y_test, y_pred, average='weighted'), 4)
+        y_pred_probs = clf.predict_proba(X_test)
 
-        # results from testing on the test data
-        f1_2, y_pred_2, y_pred_probs_2 = self.evaluate_classifier(clf, X_test_2, y_test_2)
+        # test on the test_Data
+        y_pred_2 = clf.predict(X_test_2)
+        f1_2 = round(f1_score(y_test_2, y_pred_2, average='weighted'), 4)
+        y_pred_probs_2 = clf.predict_proba(X_test_2)
 
         return f1, f1_2, y_test, y_test_2, y_pred_probs, y_pred_probs_2
 
     def train_test_cross_val(self, clf, train_data, test_data, n_folds=5):
-        x_raw, y_raw = self.read_data(train_data)
-        X = self.scaler.fit_transform(x_raw)
-        self.classes = np.unique(y_raw)  # Set self.classes to the unique class labels
+        """
+        Train and test the classifier using k-fold cross-validation.
 
-        # test data
+        :param clf: Classifier object to train and test
+        :param train_data: Path to the training dataset file
+        :param test_data: Path to the testing dataset file
+        :param n_folds: Number of folds for cross-validation
+        :return: f1 score for the training data and testing data, true labels for both datasets,
+                 predicted probabilities for both datasets
+        """
+
+        # Read the training dataset and scale the features
+        x_train_raw, y_train_raw = self.read_data(train_data)
+        x_train_raw = self.scaler.fit_transform(x_train_raw)
+        self.classes = np.unique(y_train_raw)
+
+        # Read the testing dataset and scale the features
         X_test_2, y_test_2 = self.read_data(test_data)
         X_test_2 = self.scaler.transform(X_test_2)
 
@@ -118,39 +123,44 @@ class ClassifierEvaluationFramework:
         y_pred_probs_all = []
         y_pred_probs_all_2 = []
 
-        for train_index, test_index in kf.split(X, y_raw):
-            X_train, X_test = X[train_index], X[test_index]
-            y_train, y_test = y_raw[train_index], y_raw[test_index]
+        for train_index, test_index in kf.split(x_train_raw, y_train_raw):
+            # Split the data into training and testing sets
+            X_train, X_test = x_train_raw[train_index], x_train_raw[test_index]
+            y_train, y_test = y_train_raw[train_index], y_train_raw[test_index]
 
+            # Fit the classifier to the training data
             clf.fit(X_train, y_train)
 
+            # Make predictions on the test data to the "train_data"
             y_pred = clf.predict(X_test)
-
             y_pred_probs = clf.predict_proba(X_test)
+
+            # Make predictions on the testing dataset for "test_data"
             y_pred_probs_2 = clf.predict_proba(X_test_2)
 
-            y_preds_all.append(dict(zip(test_index, y_pred)))
-            y_pred_probs_all.append(dict(zip(test_index, y_pred_probs)))
+            # Append the predictions and probabilities to the lists
+            y_preds_all.extend(list(zip(test_index, y_pred)))
+            y_pred_probs_all.extend(list(zip(test_index, y_pred_probs)))
             y_pred_probs_all_2.append(y_pred_probs_2)
 
-        # Combine the predictions and probabilities from all folds
-        y_preds_combined = {index: pred for fold_preds in y_preds_all for index, pred in fold_preds.items()}
-        y_pred_probs_combined = {index: probs for fold_probs in y_pred_probs_all for index, probs in fold_probs.items()}
-
         # Sort the predictions and probabilities by index to match the original order of the samples
-        y_true = np.array(y_raw)
-        y_pred = np.array([y_preds_combined[i] for i in sorted(y_preds_combined)])
-        y_pred_probs = np.array([y_pred_probs_combined[i] for i in sorted(y_pred_probs_combined)])
+        y_preds_all.sort(key=lambda x: x[0])
+        y_pred_probs_all.sort(key=lambda x: x[0])
 
-        # Average the probabilities for dataset2 and compute the predictions from the averaged probabilities
-        y_pred_probs_2_avg = np.mean(y_pred_probs_all_2, axis=0)
-        y_preds_2_avg = np.argmax(y_pred_probs_2_avg, axis=1)
+        # Convert the predictions and probabilities of "train_data" to NumPy arrays
+        y_true = np.array(y_train_raw)
+        y_pred = np.array([pred for _, pred in y_preds_all])
+        y_pred_probs = np.array([probs for _, probs in y_pred_probs_all])
 
-        f1 = f1_score(y_true, y_pred, average='weighted')
-        f1_2 = f1_score(y_test_2, y_preds_2_avg, average='weighted')
+        # Average the probabilities for the "test_data" and compute the predictions from the averaged probabilities
+        y_pred_probs_2 = np.mean(y_pred_probs_all_2, axis=0)
+        y_preds_2 = np.argmax(y_pred_probs_2, axis=1)
 
-        return f1, f1_2, y_true, y_test_2, y_pred_probs, y_pred_probs_2_avg
+        # Compute the f1 score for both datasets
+        f1 = round(f1_score(y_true, y_pred, average='weighted'), 4)
+        f1_2 = round(f1_score(y_test_2, y_preds_2, average='weighted'), 4)
 
+        return f1, f1_2, y_true, y_test_2, y_pred_probs, y_pred_probs_2
 
     def t1t2_results(self, cross_val=False):
         """
@@ -193,7 +203,7 @@ class ClassifierEvaluationFramework:
 
                     if cross_val:
                         f1, f1_2, y_true, y_true_2, y_score, y_score_2 = self.train_test_cross_val(clf, train_data,
-                                                                                                      test_data)
+                                                                                                   test_data)
 
                     else:
                         f1, f1_2, y_true, y_true_2, y_score, y_score_2 = self.train_test(clf, train_data, test_data)
@@ -201,7 +211,7 @@ class ClassifierEvaluationFramework:
                     # if train data == real path, then f1_real = f1 and f1_synth_or_mixed = f1_2. And opposite.
                     f1_real, f1_synth_or_mixed = (f1, f1_2) if train_data == self.real_path else (f1_2, f1)
 
-                    f1_difference = f1_real - f1_synth_or_mixed
+                    f1_difference = round(f1_real - f1_synth_or_mixed, 4)
 
                     results.append({
                         'classifier': clf_name,
@@ -224,8 +234,8 @@ class ClassifierEvaluationFramework:
                                             ax=ax, plot_class_curves=False)
 
             plt.tight_layout()
-            # plt.savefig(f'{self.result_path}/roc_curves_x_val{group_idx + 1}.png')
+            plt.savefig(f'{self.result_path}/roc_curves_cross_val_{group_idx + 1}.png')
             plt.show()
 
-        results_df = pd.DataFrame(results)  # Convert the list of dictionaries to a DataFrame
-        print(results_df)
+        results_df = pd.DataFrame(results)
+        results_df.to_csv(f'{self.result_path}/classifier_f1_scores_cross_val.csv', index=False)
