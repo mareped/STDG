@@ -211,13 +211,13 @@ class ClassifierEvaluationFramework:
 
         return f1, f1_2, y_true, y_test_2, y_pred_probs, y_pred_probs_2
 
-    def t1t2_results(self, synth_percentage=1, real_percentage=0.5, cross_val=False):
+    def t1t2_results(self, real_percentage=0.5, synth_percentage=1, cross_val=False):
         """
         Evaluate classifiers using the train_on_1_test_on_2() function with all combinations of datasets and
         classifiers.
 
-        :param synth_percentage: How much of the synthetic data to use for augmentation
         :param real_percentage: How much of the real data to use for augmentation
+        :param synth_percentage: How much of the synthetic data to use for augmentation
         :param cross_val: Uses cross-validation instead of Train-Test split if True
         """
 
@@ -289,9 +289,8 @@ class ClassifierEvaluationFramework:
                                             ax=ax, plot_class_curves=False)
 
             plt.tight_layout()
-            # plt.savefig(f'{self.result_path}/roc_curves_cross_val_{group_idx + 1}.png')
+            plt.savefig(f'{self.result_path}/roc_curves_cross_val_{group_idx + 1}_check.png')
             plt.show()
 
         results_df = pd.DataFrame(results)
-        print(results_df)
-        #results_df.to_csv(f'{self.result_path}/classifier_f1_scores_test.csv', index=False)
+        results_df.to_csv(f'{self.result_path}/classifier_f1_scores_cross_val_check.csv', index=False)

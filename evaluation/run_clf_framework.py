@@ -1,5 +1,5 @@
 from config import DataConfig
-from evaluation.classifier_eval_framework_test import ClassifierEvaluationFramework
+from evaluation.classifier_evaluation_framework import ClassifierEvaluationFramework
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
