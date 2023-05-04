@@ -80,7 +80,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\results\lower_back_pain\ctgan_600_epochs_100_batch\classifier_evaluation\classifier_f1_scores_test.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\results\lower_back_pain\ctgan_600_epochs_100_batch\classifier_evaluation\classifier_f1_scores_x_val.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\results\lower_back_pain\ctgan_600_epochs_100_batch\classifier_evaluation\classifier_results.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -102,6 +116,20 @@
           </value>
         </entry>
         <entry key="\results\obesity\ctgan_300_epochs_50_batch\classifier_evaluation\classifier_f1_scores_cross_val.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\results\obesity\ctgan_300_epochs_50_batch\classifier_evaluation\classifier_f1_scores_test.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\results\obesity\ctgan_300_epochs_50_batch\classifier_evaluation\classifier_results.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

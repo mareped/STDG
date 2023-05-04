@@ -20,13 +20,14 @@ evaluations using various combinations of datasets. The results, including F1 sc
 are visualized and saved for easy comparison and analysis.
 """
 
+
 class ClassifierEvaluationFramework:
 
-    def __init__(self, real_path, synth_path, mixed_path, result_path):
+    def __init__(self, real_path, synth_path, result_path):
         self.real_path = real_path
         self.synth_path = synth_path
-        self.mixed_path = mixed_path
         self.result_path = result_path + "/classifier_evaluation"
+        self.augmented_data = None
         self.classes = None
         self.scaler = MinMaxScaler()
         self.classifiers = []
@@ -53,7 +54,7 @@ class ClassifierEvaluationFramework:
         for clf in classifiers:
             self.add_classifier(clf)
 
-    def read_data(self, dataset_path):
+    def get_features_and_labels(self, dataset):
         """
         Read dataset from the specified path and return features and labels.
 
@@ -61,25 +62,67 @@ class ClassifierEvaluationFramework:
         :return: Features and labels as NumPy arrays
         """
 
-        dataset = pd.read_csv(dataset_path)
+        # in case of augmented data
+        if dataset is None:
+            return None, None
+
+        if isinstance(dataset, str):
+            dataset = pd.read_csv(dataset)
 
         x = dataset.iloc[:, :-1].values
         y = dataset.iloc[:, -1].values
 
         return x, y
 
+    def create_augmented_data(self, real_percentage, synth_percentage, random_seed=None):
+        """
+        Create an augmented dataset by combining a percentage of the real data and a percentage of the fake data.
+
+        Args:
+            real_percentage (float): The percentage of the real data to use for augmentation (between 0 and 1).
+            synth_percentage (float): The percentage of the fake data to use for augmentation (between 0 and 1).
+            random_seed (int, optional): Seed for reproducibility.
+
+        Returns:
+            tuple: A tuple containing the remaining real data and the augmented data.
+        """
+
+        real_data = pd.read_csv(self.real_path)
+        synth_data = pd.read_csv(self.synth_path)
+        if random_seed is not None:
+            np.random.seed(random_seed)
+
+        real_data = real_data.sample(frac=1).reset_index(drop=True)
+
+        real_sample_size = int(len(real_data) * real_percentage)
+        synth_sample_size = int(len(synth_data) * synth_percentage)
+
+        real_sample = real_data.sample(n=real_sample_size)
+        remaining_real_data = real_data.drop(real_sample.index)
+
+        synth_sample = synth_data.sample(n=synth_sample_size)
+
+        self.augmented_data = pd.concat([real_sample, synth_sample]).sample(frac=1).reset_index(drop=True)
+
+        return remaining_real_data, self.augmented_data
+
     def train_test(self, clf, train_data, test_data, test_size=0.25):
-        x_train_raw, y_train_raw = self.read_data(train_data)
+        x_train_raw, y_train_raw = self.get_features_and_labels(train_data)
         self.classes = np.unique(y_train_raw)
+
+        # defines test data
+        X_test_2, y_test_2 = self.get_features_and_labels(test_data)
+
+        # in case of augmented data
+        if x_train_raw is None and y_train_raw is None:
+            x_train_raw, y_train_raw = self.get_features_and_labels(self.augmented_data)
 
         X_train, X_test, y_train, y_test = train_test_split(x_train_raw, y_train_raw, test_size=test_size,
                                                             random_state=16)
 
+        # min_max data
         X_train = self.scaler.fit_transform(X_train)
         X_test = self.scaler.transform(X_test)
-
-        # test data
-        X_test_2, y_test_2 = self.read_data(test_data)
         X_test_2 = self.scaler.transform(X_test_2)
 
         clf.fit(X_train, y_train)
@@ -109,12 +152,18 @@ class ClassifierEvaluationFramework:
         """
 
         # Read the training dataset and scale the features
-        x_train_raw, y_train_raw = self.read_data(train_data)
-        x_train_raw = self.scaler.fit_transform(x_train_raw)
+        x_train_raw, y_train_raw = self.get_features_and_labels(train_data)
         self.classes = np.unique(y_train_raw)
 
-        # Read the testing dataset and scale the features
-        X_test_2, y_test_2 = self.read_data(test_data)
+        # in case of augmented data
+        if x_train_raw is None and y_train_raw is None:
+            x_train_raw, y_train_raw = self.get_features_and_labels(self.augmented_data)
+
+        # Read the testing dataset
+        X_test_2, y_test_2 = self.get_features_and_labels(test_data)
+
+        # min_max data
+        x_train_raw = self.scaler.fit_transform(x_train_raw)
         X_test_2 = self.scaler.transform(X_test_2)
 
         kf = StratifiedKFold(n_splits=n_folds)
@@ -162,17 +211,14 @@ class ClassifierEvaluationFramework:
 
         return f1, f1_2, y_true, y_test_2, y_pred_probs, y_pred_probs_2
 
-    def t1t2_results(self, cross_val=False):
+    def t1t2_results(self, synth_percentage=1, real_percentage=0.5, cross_val=False):
         """
         Evaluate classifiers using the train_on_1_test_on_2() function with all combinations of datasets and
         classifiers.
 
+        :param synth_percentage: How much of the synthetic data to use for augmentation
+        :param real_percentage: How much of the real data to use for augmentation
         :param cross_val: Uses cross-validation instead of Train-Test split if True
-        :param real_path: Path to the real dataset file
-        :param synth_path: Path to the synthetic dataset file
-        :param mixed_path: Path to the mixed dataset file
-        :param result_path: Path to the directory for storing results
-        :param test_size: Proportion of the dataset to include in the test split
         """
 
         warnings.filterwarnings("ignore")
@@ -193,13 +239,22 @@ class ClassifierEvaluationFramework:
                 data_dict = {
                     "real": (self.real_path, self.synth_path),
                     "synth": (self.synth_path, self.real_path),
-                    "mixed": (self.mixed_path, self.real_path)
+                    "augmented": (None, self.real_path)  # Set train_data to None for augmented case
                 }
 
                 for jdx, (data_name, (train_data, test_data)) in enumerate(data_dict.items()):
                     ax = axes[idx, jdx]
 
                     print(f"Training classifier {clf_name} on {data_name} data")
+
+                    real_data_case = False  # Add this line to create a flag for the real data case
+
+                    if data_name == "augmented":
+                        # Create the augmented dataset
+                        remaining_real_data, train_data = self.create_augmented_data(real_percentage, synth_percentage)
+                        test_data = remaining_real_data
+                    else:
+                        real_data_case = train_data == self.real_path  # Set the flag if train_data is the real_path
 
                     if cross_val:
                         f1, f1_2, y_true, y_true_2, y_score, y_score_2 = self.train_test_cross_val(clf, train_data,
@@ -208,16 +263,16 @@ class ClassifierEvaluationFramework:
                     else:
                         f1, f1_2, y_true, y_true_2, y_score, y_score_2 = self.train_test(clf, train_data, test_data)
 
-                    # if train data == real path, then f1_real = f1 and f1_synth_or_mixed = f1_2. And opposite.
-                    f1_real, f1_synth_or_mixed = (f1, f1_2) if train_data == self.real_path else (f1_2, f1)
+                    # if train data == real path, then f1_real = f1 and f1_synth_or_augmented = f1_2. And opposite.
+                    f1_real, f1_synth_or_augmented = (f1, f1_2) if real_data_case else (f1_2, f1)
 
-                    f1_difference = round(f1_real - f1_synth_or_mixed, 4)
+                    f1_difference = round(f1_real - f1_synth_or_augmented, 4)
 
                     results.append({
                         'classifier': clf_name,
                         'train_data': data_name,
                         'f1_real': f1_real,
-                        'f1_synth/mixed': f1_synth_or_mixed,
+                        'f1_synth/augmented': f1_synth_or_augmented,
                         'f1_difference': f1_difference
                     })
 
@@ -234,8 +289,9 @@ class ClassifierEvaluationFramework:
                                             ax=ax, plot_class_curves=False)
 
             plt.tight_layout()
-            plt.savefig(f'{self.result_path}/roc_curves_cross_val_{group_idx + 1}.png')
+            # plt.savefig(f'{self.result_path}/roc_curves_cross_val_{group_idx + 1}.png')
             plt.show()
 
         results_df = pd.DataFrame(results)
-        results_df.to_csv(f'{self.result_path}/classifier_f1_scores_cross_val.csv', index=False)
+        print(results_df)
+        #results_df.to_csv(f'{self.result_path}/classifier_f1_scores_test.csv', index=False)
