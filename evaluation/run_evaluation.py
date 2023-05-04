@@ -43,5 +43,12 @@ def run_bs():
 # run_te()
 
 
-sdv_evaluation = SDVEvaluation(real_path, fake_path, meta_data_path, result_path)
+"""sdv_evaluation = SDVEvaluation(real_path, fake_path, meta_data_path, result_path)
 print(sdv_evaluation.row_synhesis())
+"""
+
+te_evaluation = TableEvaluatorEvaluation(real_path, fake_path, result_path, data_name)
+
+# for mixed
+# te_evaluation = TableEvaluatorEvaluation(real_path, mixed_path, result_path, data_name)
+te_evaluation.get_results_report()

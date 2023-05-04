@@ -83,7 +83,7 @@ class TableEvaluatorEvaluation:
             print("Date and time = %s" % e, "\n\n\n")
 
             table_evaluator = TableEvaluator(r_data, f_data, cat_cols=cat_cols)
-            table_evaluator.evaluate(target_col=target_col)
+            table_evaluator.evaluate(target_col=target_col, kfold = True)
 
             # Reset the standard output
             sys.stdout = original_stdout

@@ -1,0 +1,10 @@
+classifier,train_data,f1_real,f1_synth/mixed,f1_difference
+LogisticRegression,real,0.6474,0.6422,0.0052
+LogisticRegression,synth,0.6893,0.7228,-0.0335
+LogisticRegression,mixed,0.6337,0.6463,-0.0126
+RandomForestClassifier,real,0.7164,0.6968,0.0196
+RandomForestClassifier,synth,0.6863,0.7424,-0.0561
+RandomForestClassifier,mixed,0.999,0.7226,0.2764
+MLPClassifier,real,0.7236,0.704,0.0196
+MLPClassifier,synth,0.7003,0.7423,-0.042
+MLPClassifier,mixed,0.7231,0.7224,0.0007

@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 from sklearn.metrics import auc, roc_curve, confusion_matrix
+from sklearn.preprocessing import label_binarize
 
 
 def column_correlation_plot(data, save_plot=False, save_path=None):
@@ -67,6 +68,9 @@ def compute_roc_auc(y_true, y_score, n_classes):
         fpr = dict()
         tpr = dict()
         roc_auc = dict()
+        # Display the shape of y_true and y_score
+        y_true = label_binarize(y_true, classes=range(n_classes))
+
         for i in range(n_classes):
             fpr[i], tpr[i], _ = roc_curve(y_true[:, i], y_score[:, i])
             roc_auc[i] = auc(fpr[i], tpr[i])
@@ -112,6 +116,7 @@ def plot_binaryclass_roc(y_true_real, y_score_real, y_true_synth, y_score_synth,
 
 def plot_multiclass_roc(y_true_real, y_score_real, y_true_synth, y_score_synth, n_classes, clf_name,
                         plot_class_curves=True, ax=None):
+
     fpr_real, tpr_real, roc_auc_real = compute_roc_auc(y_true_real, y_score_real, n_classes)
     fpr_synth, tpr_synth, roc_auc_synth = compute_roc_auc(y_true_synth, y_score_synth, n_classes)
     lw = 2
