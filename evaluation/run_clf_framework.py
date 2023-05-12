@@ -1,10 +1,9 @@
 from config import DataConfig
-from evaluation.classifier_evaluation_framework import ClassifierEvaluationFramework
+from evaluation.synth_eval_framework import SynthEval
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
 
 
 config = DataConfig(dataset_name='obesity', model_name='ctgan', epochs=300, batch_size=50)
@@ -16,9 +15,9 @@ logreg = LogisticRegression()
 rf = RandomForestClassifier()
 mlp = MLPClassifier()
 
-evaluator = ClassifierEvaluationFramework(real_path, fake_path, result_path)
+evaluator = SynthEval(real_path, fake_path, result_path)
 
 evaluator.add_all_classifiers(logreg, rf, mlp)
 
-evaluator.t1t2_results(cross_val=True)
+evaluator.compare_datasets_performance(real_percentage=0.5, synth_percentage=1, cross_val=True)
 

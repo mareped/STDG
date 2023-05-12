@@ -110,12 +110,12 @@ class SDVEvaluation:
         fig.show()
         fig.write_image(self.result_path + "all_boundaries_plot.png")
 
-    def row_synhesis(self):
+    def row_synhesis(self, match_tolerance=0.0):
         new_row_synthesis = NewRowSynthesis.compute_breakdown(
             real_data=self.real_data,
             synthetic_data=self.synthetic_data,
             metadata=self.metadata.to_dict(),
-            numerical_match_tolerance=0.0)
+            numerical_match_tolerance=match_tolerance)
 
         return new_row_synthesis
 

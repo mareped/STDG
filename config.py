@@ -3,7 +3,7 @@ This class defines configuration for generating synthetic data using GAN models 
 The allowed values for datasets and models are listed in the class constants.
 The configuration includes the number of epochs, batch size, file name, and file paths for the real, synthetic, and mixed data
 
-Use this file to define where to read and write the data used for easier configuration.
+Use this file to define where to read from and write the data to for easier configuration.
 """
 
 
