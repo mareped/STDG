@@ -1,0 +1,50 @@
+QUALITY REPORT
+ Quality Score: 0.904533384947898
+ Properties: 
+              Property     Score
+0       Column Shapes  0.906063
+1  Column Pair Trends  0.903004 Details:
+          Column        Metric  Quality Score
+0           age  KSComplement       0.929014
+1        height  KSComplement       0.918786
+2        weight  KSComplement       0.923543
+3         ap_hi  KSComplement       0.865329
+4         ap_lo  KSComplement       0.760486
+5        gender  TVComplement       0.973171
+6   cholesterol  TVComplement       0.949886
+7          gluc  TVComplement       0.845529
+8         smoke  TVComplement       0.907586
+9          alco  TVComplement       0.913371
+10       active  TVComplement       0.944471
+11       cardio  TVComplement       0.941586DIAGNOSTIC REPORT
+<sdmetrics.reports.single_table.diagnostic_report.DiagnosticReport object at 0x00000161B6D46670> 
+
+DIAGNOSTIC REPORT: Properties 
+{'Coverage': 0.7602657447454136, 'Synthesis': 0.9933, 'Boundaries': 1.0} 
+
+DIAGNOSTIC REPORT: Synthesis
+            Metric  Diagnostic Score  Num Matched Rows  Num New Rows
+0  NewRowSynthesis            0.9933                67          9933 
+
+DIAGNOSTIC REPORT: Coverage
+         Column            Metric  Diagnostic Score
+0           age     RangeCoverage          0.751220
+1        height     RangeCoverage          0.312821
+2        weight     RangeCoverage          0.941609
+3         ap_hi     RangeCoverage          0.009771
+4         ap_lo     RangeCoverage          0.107769
+5        gender  CategoryCoverage          1.000000
+6   cholesterol  CategoryCoverage          1.000000
+7          gluc  CategoryCoverage          1.000000
+8         smoke  CategoryCoverage          1.000000
+9          alco  CategoryCoverage          1.000000
+10       active  CategoryCoverage          1.000000
+11       cardio  CategoryCoverage          1.000000 
+
+DIAGNOSTIC REPORT: Boundaries
+   Column             Metric  Diagnostic Score
+0     age  BoundaryAdherence               1.0
+1  height  BoundaryAdherence               1.0
+2  weight  BoundaryAdherence               1.0
+3   ap_hi  BoundaryAdherence               1.0
+4   ap_lo  BoundaryAdherence               1.0 

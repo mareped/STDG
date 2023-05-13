@@ -1,4 +1,4 @@
-Date and time = 2023-05-03 13:23:30.722972 
+Date and time = 2023-05-06 15:13:15.893195 
 
 
 
@@ -6,20 +6,20 @@ Date and time = 2023-05-03 13:23:30.722972
 Classifier F1-scores and their Jaccard similarities::
                              f1_real  f1_fake  jaccard_similarity
 index                                                            
-DecisionTreeClassifier_fake   0.6075   0.6507              0.4263
-DecisionTreeClassifier_real   0.6345   0.6093              0.4325
-LogisticRegression_fake       0.7085   0.7116              0.8083
-LogisticRegression_real       0.7057   0.6841              0.8053
-MLPClassifier_fake            0.5648   0.6761              0.3595
-MLPClassifier_real            0.5665   0.6380              0.3501
-RandomForestClassifier_fake   0.6845   0.7168              0.6008
-RandomForestClassifier_real   0.6988   0.6590              0.5900
+DecisionTreeClassifier_fake   0.6039   0.6530              0.4277
+DecisionTreeClassifier_real   0.6348   0.6105              0.4335
+LogisticRegression_fake       0.7075   0.7089              0.7928
+LogisticRegression_real       0.7007   0.6838              0.7891
+MLPClassifier_fake            0.5915   0.6700              0.5279
+MLPClassifier_real            0.6106   0.6396              0.5311
+RandomForestClassifier_fake   0.6860   0.7156              0.6015
+RandomForestClassifier_real   0.6983   0.6630              0.5889
 
 Privacy results:
                                           result
 Duplicate rows between sets (real/fake)  (48, 0)
-nearest neighbor mean                     0.8927
-nearest neighbor std                      1.1326
+nearest neighbor mean                     0.7173
+nearest neighbor std                      1.1012
 
 Miscellaneous results:
                                   Result
@@ -31,5 +31,5 @@ Results:
 Basic statistics                                0.9113
 Correlation column correlations                 0.7909
 Mean Correlation between fake and real columns  0.7336
-1 - MAPE Estimator results                      0.9283
-Similarity Score                                0.8410
+1 - MAPE Estimator results                      0.9476
+Similarity Score                                0.8458
