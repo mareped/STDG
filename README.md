@@ -23,6 +23,7 @@ This repository contains the code, data, and results related to my thesis on syn
 Please navigate through these directories to explore the project further.
 
 ## Example: Running the SynthEval Framework
+Code snippet from  `/evaluation/run_clf_framework.py` :
 ```python
 # Declare which classifiers to use
 logreg = LogisticRegression()
